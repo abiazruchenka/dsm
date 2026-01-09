@@ -1,0 +1,45 @@
+{
+    "header": {
+        "home": "Startseite",
+        "events": "Veranstaltungen",
+        "reenactment": "Reenactment",
+        "gallery": "Galerie",
+        "contact": "Kontakt"
+    },
+    "main": {
+        "text": "Darstellungsgruppe Süddeutsches Militär e.V.",
+        "subtext": "Geschichtsdarstellung der Alten Armee 1870-1918"
+    },
+    "events": {
+        "title": "Veranstaltungen",
+        "description": "Kommende Veranstaltungen und historische Demonstrationen"
+    },
+    "gallery": {
+        "title": "Galerie",
+        "description": "Fotogalerie von vergangenen Veranstaltungen und Nachstellungen"
+    },
+    "reenactment": {
+        "title": "Reenactment",
+        "description": "Informationen über unsere Reenactment-Aktivitäten und Projekte werden hier angezeigt."
+    },
+    "login": {
+        "email": "Ihre E-Mail",
+        "password": "Passwort",
+        "login": "Anmeldung",
+        "loggingIn": "Anmeldung...",
+        "dontHaveAccount": "Sie haben kein Konto? Kontaktieren Sie den Administrator.",
+        "logoutButton": "Abmelden",
+        "loginFailed": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten."
+    },
+    "contact": {
+        "title": "Kontakt",
+        "description": "Haben Sie eine Frage oder möchten Sie zusammenarbeiten? Senden Sie eine Nachricht.",
+        "name": "Ihr Name",
+        "email": "Ihre E-Mail",
+        "message": "Ihre Nachricht",
+        "sent": "Nachricht gesendet. Danke!",
+        "sendFailed": "Senden fehlgeschlagen. Versuchen Sie es später.",
+        "sending": "Senden...",
+        "sendMessage": "Nachricht senden"
+    }
+}

@@ -1,0 +1,45 @@
+{
+  "header": {
+    "home": "Accueil",
+    "events": "Événements",
+    "reenactment": "Reconstitution",
+    "gallery": "Galerie",
+    "contact": "Contact"
+  },
+  "main": {
+    "text": "Groupe de reconstitution militaire du sud de l'Allemagne e.V.",
+    "subtext": "Reconstitution historique de la Vieille Armée 1870-1918"
+  },
+  "events": {
+    "title": "Événements",
+    "description": "Événements de reconstitution à venir et démonstrations historiques"
+  },
+  "gallery": {
+    "title": "Galerie",
+    "description": "Galerie photo des événements passés et des reconstitutions"
+  },
+  "reenactment": {
+    "title": "Reconstitution",
+    "description": "Les informations sur nos activités et projets de reconstitution seront affichées ici."
+  },
+  "login": {
+    "email": "Votre e-mail",
+    "password": "Mot de passe",
+    "login": "Connexion",
+    "loggingIn": "Connexion en cours...",
+    "dontHaveAccount": "Vous n’avez pas de compte ? Contactez l’administrateur.",
+    "logoutButton": "Déconnexion",
+    "loginFailed": "Échec de la connexion. Veuillez vérifier vos identifiants."
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "description": "Une question ou envie de collaborer ? Envoyez-nous un message.",
+    "name": "Votre nom",
+    "email": "Votre e-mail",
+    "message": "Votre message",
+    "sent": "Message envoyé. Merci !",
+    "sendFailed": "Échec de l’envoi. Veuillez réessayer plus tard.",
+    "sending": "Envoi…",
+    "sendMessage": "Envoyer le message"
+  }
+}

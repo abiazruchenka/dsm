@@ -1,0 +1,20 @@
+.language-switcher { 
+    display:flex; 
+    gap:8px; 
+    align-items:center; 
+}
+
+.lang-btn { 
+    background:transparent; 
+    border:1px solid transparent; 
+    padding:6px 10px; 
+    border-radius:4px; 
+    cursor:pointer; 
+}
+
+.lang-btn.active { 
+    font-weight:600; 
+    background:transparent; 
+    color:white; 
+    border:1px solid #ccc; 
+}

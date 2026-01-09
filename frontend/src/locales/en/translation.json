@@ -1,0 +1,45 @@
+{
+    "header": {
+        "home": "Home",
+        "events": "Events",
+        "reenactment": "Reenactment",
+        "gallery": "Gallery",
+        "contact": "Contact"
+    },
+    "main": {
+        "text": "South German Military Reenactment Group e.V.",
+        "subtext": "Historical reenactment of the Old Army 1870-1918"
+    },
+    "events": {
+        "title": "Events",
+        "description": "Upcoming reenactment events and historical demonstrations"
+    },
+    "gallery": {
+        "title": "Gallery",
+        "description": "Photo gallery from past events and reenactments"
+    },
+    "reenactment": {
+        "title": "Reenactment",
+        "description": "Information about our reenactment activities and projects will be displayed here."
+    },
+    "login": {
+        "email": "Your email",
+        "password": "Password",
+        "login": "Login",
+        "loggingIn": "Logging in...",
+        "dontHaveAccount": "Don't have an account? Contact the administrator.",
+        "logoutButton": "Logout",
+        "loginFailed": "Login failed. Please check your credentials."
+    },
+    "contact": {
+        "title": "Contact Us",
+        "description": "Have a question or want to work together? Send a message.",
+        "name": "Your name",
+        "email": "Your email",
+        "message": "Your message",
+        "sent": "Message sent. Thank you!",
+        "sendFailed": "Sending failed. Try later.",
+        "sending": "Sending...",
+        "sendMessage": "Send Message"
+    }
+}

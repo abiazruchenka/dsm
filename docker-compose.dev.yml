@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dsm-postgres-dev
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dsmdb}
+      POSTGRES_USER: ${POSTGRES_USER:-dsmuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dsmpassword}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dsm-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dsmuser}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: dsm-backend-dev
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-dsmdb}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-dsmuser}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-dsmpassword}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO:-update}
+      SPRING_JPA_SHOW_SQL: ${SPRING_JPA_SHOW_SQL:-true}
+      SERVER_PORT: 8080
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/target:/app/target
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - dsm-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: dsm-frontend-dev
+    environment:
+      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:8080}
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - dsm-network
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+networks:
+  dsm-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
