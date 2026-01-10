@@ -1,7 +1,6 @@
 import api from '../config/axios';
 
 export const authService = {
-  // Register new user
   register: async (userData) => {
     try {
       const response = await api.post('/api/auth/register', userData);
@@ -11,7 +10,6 @@ export const authService = {
     }
   },
 
-  // Login user
 login: async (credentials) => {
   try {
     const loginPayload = {
@@ -22,13 +20,12 @@ login: async (credentials) => {
     const response = await api.post('/api/auth/login', loginPayload);
     const { token, user } = response.data;
     
-    // Store token and user data in localStorage
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     
     return response.data;
   } catch (error) {
-    // Extract error message from Spring Security response
+
     const errorData = error.response?.data;
     let errorMessage = 'Login failed';
     
@@ -52,24 +49,20 @@ login: async (credentials) => {
   }
 },
 
-  // Logout user
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   },
 
-  // Get current user from localStorage
   getCurrentUser: () => {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
   },
 
-  // Check if user is authenticated
   isAuthenticated: () => {
     return !!localStorage.getItem('token');
   },
 
-  // Get user profile
   getProfile: async () => {
     try {
       const response = await api.get('/api/users/profile');
@@ -79,7 +72,6 @@ login: async (credentials) => {
     }
   },
 
-  // Get user by ID
   getUserById: async (userId) => {
     try {
       const response = await api.get(`/api/users/${userId}`);
@@ -89,7 +81,6 @@ login: async (credentials) => {
     }
   },
 
-  // Get all users
   getAllUsers: async () => {
     try {
       const response = await api.get('/api/users');
