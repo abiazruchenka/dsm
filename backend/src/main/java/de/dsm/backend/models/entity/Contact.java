@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -18,14 +19,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Contact {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @EqualsAndHashCode.Include
-    private Long id;
+    private UUID id;
 
     private String name;
     private String email;
     private String message;
     private LocalDateTime createdAt;
+    private boolean read;
+    private LocalDateTime readAt;
 
     public Contact(String name, String email, String message) {
         this.name = name;
@@ -36,5 +39,12 @@ public class Contact {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void markAsRead() {
+        if (!this.read) {
+            this.read = true;
+            this.readAt = LocalDateTime.now();
+        }
     }
 }
