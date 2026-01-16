@@ -1,4 +1,5 @@
 package de.dsm.backend.models.dto;
 
-public class LoginRequest {
+public record LoginRequest (String email, String password){
 }
+

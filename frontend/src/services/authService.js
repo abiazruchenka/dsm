@@ -1,19 +1,11 @@
-import api from '../config/axios';
+import api from '../config/axios.js';
 
 export const authService = {
-  register: async (userData) => {
-    try {
-      const response = await api.post('/api/auth/register', userData);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || error.message;
-    }
-  },
 
-login: async (credentials) => {
+  login: async (credentials) => {
   try {
     const loginPayload = {
-      email: credentials.email || credentials.username, 
+      email: credentials.email, 
       password: credentials.password
     };
     
@@ -22,6 +14,8 @@ login: async (credentials) => {
     
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
+
+    window.dispatchEvent(new CustomEvent('authStateChanged'));
     
     return response.data;
   } catch (error) {
@@ -52,6 +46,8 @@ login: async (credentials) => {
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+
+    window.dispatchEvent(new CustomEvent('authStateChanged'));
   },
 
   getCurrentUser: () => {
@@ -62,32 +58,5 @@ login: async (credentials) => {
   isAuthenticated: () => {
     return !!localStorage.getItem('token');
   },
-
-  getProfile: async () => {
-    try {
-      const response = await api.get('/api/users/profile');
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || error.message;
-    }
-  },
-
-  getUserById: async (userId) => {
-    try {
-      const response = await api.get(`/api/users/${userId}`);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || error.message;
-    }
-  },
-
-  getAllUsers: async () => {
-    try {
-      const response = await api.get('/api/users');
-      return response.data;
-    } catch (error) {
-      throw error.response?.data || error.message;
-    }
-  }
 };
 

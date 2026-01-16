@@ -41,5 +41,20 @@
     "sendFailed": "Échec de l’envoi. Veuillez réessayer plus tard.",
     "sending": "Envoi…",
     "sendMessage": "Envoyer le message"
+  },
+  "contactMessages": {
+    "title": "Messages de contact",
+    "totalMessages": "Total des messages",
+    "loading": "Chargement...",
+    "noMessages": "Aucun message encore",
+    "read": "Lu",
+    "delete": "Supprimer",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce message ?",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page",
+    "of": "de",
+    "loadFailed": "Échec du chargement des messages.",
+    "markRead": "Marquer comme lu"
   }
 }

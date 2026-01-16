@@ -50,7 +50,7 @@ create table if not exists photos (
     sort_order INTEGER DEFAULT 0,
     is_published BOOLEAN NOT NULL DEFAULT TRUE,
 
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_gallery_images_gallery_id ON gallery_images(gallery_id);
+CREATE INDEX IF NOT EXISTS idx_photos_gallery_id ON photos(gallery_id);

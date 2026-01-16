@@ -41,5 +41,20 @@
         "sendFailed": "Senden fehlgeschlagen. Versuchen Sie es später.",
         "sending": "Senden...",
         "sendMessage": "Nachricht senden"
+    },
+    "contactMessages": {
+        "title": "Kontakt-Nachrichten",
+        "totalMessages": "Gesamte Nachrichten",
+        "loading": "Laden...",
+        "noMessages": "Noch keine Nachrichten",
+        "read": "Gelesen",
+        "delete": "Löschen",
+        "deleteConfirm": "Sind Sie sicher, dass Sie diese Nachricht löschen möchten?",
+        "previous": "Vorherige",
+        "next": "Nächste",
+        "page": "Seite",
+        "of": "von",
+        "loadFailed": "Nachrichten laden fehlgeschlagen.",
+        "markRead": "Als gelesen markieren"
     }
 }

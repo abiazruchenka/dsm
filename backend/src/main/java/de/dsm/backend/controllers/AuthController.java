@@ -1,6 +1,7 @@
 package de.dsm.backend.controllers;
 
 import de.dsm.backend.config.JwtUtil;
+import de.dsm.backend.models.dto.LoginRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +26,6 @@ public class AuthController {
 
     private final JwtUtil jwtUtil;
 
-    @Value("${admin.username}")
-    private String adminUsername;
-
     @Value("${admin.password}")
     private String adminPassword;
 
@@ -33,22 +34,17 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginRequest request) {
-        // Проверяем credentials из конфига
-        boolean isValidCredentials = request.getEmail().equals(adminEmail) || 
-                                     request.getEmail().equals(adminUsername);
-        boolean isValidPassword = request.getPassword().equals(adminPassword);
+        boolean isValidCredentials = request.email().equals(adminEmail);
+        boolean isValidPassword = request.password().equals(adminPassword);
 
         if (!isValidCredentials || !isValidPassword) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Invalid credentials"));
         }
 
-        // Генерируем JWT токен
-        String token = jwtUtil.generateToken(adminUsername, adminEmail);
+        String token = jwtUtil.generateToken(adminEmail);
 
-        // Создаем объект пользователя
         Map<String, Object> user = new HashMap<>();
-        user.put("username", adminUsername);
         user.put("email", adminEmail);
         user.put("roles", new String[]{"ROLE_ADMIN"});
 
@@ -57,27 +53,5 @@ public class AuthController {
         response.put("user", user);
 
         return ResponseEntity.ok(response);
-    }
-
-    // DTO для запроса логина
-    public static class LoginRequest {
-        private String email;
-        private String password;
-
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
     }
 }

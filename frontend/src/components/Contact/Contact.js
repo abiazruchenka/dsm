@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import api from '../../config/axios';
 import './Contact.css';
 
 export default function Contact() {
@@ -28,20 +29,10 @@ export default function Contact() {
     setError(false);
 
     try {
-        const res = await fetch('/api/contact', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(formData)
-        });
-
-        if (res.ok) {
-            setStatus(t('contact.sent'));
-            setError(false);
-        }
-        else {
-            setStatus(t('contact.sendFailed'));
-            setError(true);
-        }
+        await api.post('/api/contact', formData);
+        setStatus(t('contact.sent'));
+        setError(false);
+        setFormData({ name: '', email: '', message: '' });
     } catch (err) {
       const errorMsg = err.response?.data?.message || 
                       err.response?.data?.error || 

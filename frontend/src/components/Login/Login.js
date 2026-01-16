@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authService } from '../../services/authService';
+import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import './Login.css';
 
@@ -13,6 +13,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { login } = useAuth(); 
 
   const handleChange = (e) => {
     setFormData({
@@ -27,8 +28,8 @@ export default function Login() {
     setError('');
 
     try {
-      await authService.login(formData);
-      navigate('/events');
+      await login(formData);
+      navigate('/admin');
     } catch (err) {
       const errorMsg = err.response?.data?.message || 
                       err.response?.data?.error || 
@@ -62,7 +63,7 @@ export default function Login() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                autoComplete="username"
+                autoComplete="email"
               />
             </div>
 

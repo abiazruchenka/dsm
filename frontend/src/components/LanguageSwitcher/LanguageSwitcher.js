@@ -16,18 +16,23 @@ export default function LanguageSwitcher() {
     try { localStorage.setItem('i18nextLng', lng); } catch (e) {}
   };
 
+  const currentLang = i18n.resolvedLanguage || i18n.language;
+
   return (
     <div className="language-switcher" role="navigation" aria-label="Language selector">
-      {LANGS.map(l => (
-        <button
-          key={l.code}
-          className={`lang-btn ${i18n.language === l.code ? 'active' : ''}`}
-          onClick={() => changeLanguage(l.code)}
-          aria-pressed={i18n.language === l.code}
-        >
-          <span className={`fi fi-${l.label}`} />
-        </button>
-      ))}
+      {LANGS.map(l => {
+        const isActive = currentLang === l.code || currentLang?.startsWith(l.code);
+        return (
+          <button
+            key={l.code}
+            className={`lang-btn ${isActive ? 'active' : ''}`}
+            onClick={() => changeLanguage(l.code)}
+            aria-pressed={isActive}
+          >
+            <span className={`fi fi-${l.label}`} />
+          </button>
+        );
+      })}
     </div>
   );
 }

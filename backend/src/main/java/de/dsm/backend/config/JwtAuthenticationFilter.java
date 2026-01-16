@@ -42,8 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (jwtUtil.validateToken(jwt)) {
                 var claims = jwtUtil.extractClaims(jwt);
                 String username = claims.getSubject();
-                
-                @SuppressWarnings("unchecked")
+
                 List<String> roles = (List<String>) claims.get("roles");
                 if (roles == null) {
                     roles = List.of("ROLE_ADMIN");
