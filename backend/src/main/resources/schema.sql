@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS contact (
+CREATE TABLE IF NOT EXISTS contacts (
     id UUID PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS contact (
     read_at TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_contact_email ON contact(email);
+CREATE INDEX IF NOT EXISTS idx_contacts_email ON contact(email);
 
-CREATE TABLE IF NOT EXISTS news (
+CREATE TABLE IF NOT EXISTS events (
     id UUID PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     text TEXT NOT NULL,
@@ -43,6 +43,7 @@ create table if not exists photos (
     size_bytes BIGINT,
     width INTEGER,
     height INTEGER,
+    versions JSONB,
     gallery_id UUID,
 
     caption VARCHAR(255),
