@@ -11,6 +11,7 @@ import ContactMessages from './components/Contact/ContactMessages';
 import Reenactment from './components/Reenactment/Reenactment';
 import { Routes, Route, useLocation, Navigate  } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
+import AdminGalleryManagement from './components/Admin/GalleryManagement';
 
 export default function App() {
   const location = useLocation();
@@ -36,16 +37,23 @@ export default function App() {
             <Route path="/"  element={<Home />} />
             <Route path="/startpage" element={<Startpage />} />
             <Route path="/events" element={<Events />} />
-            <Route path="/gallery" element={<Gallery />} />
+            <Route 
+              path="/gallery" 
+              element={
+                <AdminContent
+                userContent={<Gallery />}
+                adminContent={<AdminGalleryManagement />}/> 
+              } 
+            /> 
             <Route path="/reenactment" element={<Reenactment />} />
             <Route 
-            path="/contact" 
-            element={
-              <AdminContent
-                userContent={<Contact />}
-                adminContent={<ContactMessages />}
-              />
-            }
+              path="/contact" 
+              element={
+                <AdminContent
+                  userContent={<Contact />}
+                  adminContent={<ContactMessages />}
+                />
+              }
             />
             <Route 
               path="/admin" 

@@ -1,9 +1,8 @@
 import './Gallery.css';
 import Divider from '../common/Divider';
-import { getGalleryImages } from '../../services/galleryData';
 
 export default function Gallery() {
-  const images = getGalleryImages();
+  const baseUrl = process.env.DSM_S3_ENDPOINT + '/' + process.env.DSM_S3_BUCKET + '/';
 
   return (
     <section className="gallery-container">

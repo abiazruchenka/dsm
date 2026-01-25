@@ -16,7 +16,21 @@
     },
     "gallery": {
         "title": "Gallery",
-        "description": "Photo gallery from past events and reenactments"
+        "description": "Photo gallery from past events and reenactments",
+        "upload": {
+            "title": "Upload Photo",
+            "selectFile": "Select Image File",
+            "caption": "Caption",
+            "captionPlaceholder": "Enter photo caption",
+            "altText": "Alt Text",
+            "altTextPlaceholder": "Enter alt text for accessibility",
+            "upload": "Upload to Cloud",
+            "uploading": "Uploading...",
+            "success": "Photo uploaded successfully!",
+            "failed": "Upload failed. Please try again.",
+            "fileTooLarge": "File is too large. Maximum size is 10MB.",
+            "invalidFileType": "Invalid file type. Please select an image."
+        }
     },
     "reenactment": {
         "title": "Reenactment",

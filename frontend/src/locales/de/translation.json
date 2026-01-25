@@ -16,7 +16,21 @@
     },
     "gallery": {
         "title": "Galerie",
-        "description": "Fotogalerie von vergangenen Veranstaltungen und Nachstellungen"
+        "description": "Fotogalerie von vergangenen Veranstaltungen und Nachstellungen",
+        "upload": {
+            "title": "Foto hochladen",
+            "selectFile": "Bilddatei auswählen",
+            "caption": "Beschriftung",
+            "captionPlaceholder": "Foto-Beschriftung eingeben",
+            "altText": "Alt-Text",
+            "altTextPlaceholder": "Alt-Text für Barrierefreiheit eingeben",
+            "upload": "In Cloud hochladen",
+            "uploading": "Wird hochgeladen...",
+            "success": "Foto erfolgreich hochgeladen!",
+            "failed": "Upload fehlgeschlagen. Bitte versuchen Sie es erneut.",
+            "fileTooLarge": "Datei ist zu groß. Maximale Größe ist 10MB.",
+            "invalidFileType": "Ungültiger Dateityp. Bitte wählen Sie ein Bild aus."
+        }
     },
     "reenactment": {
         "title": "Reenactment",

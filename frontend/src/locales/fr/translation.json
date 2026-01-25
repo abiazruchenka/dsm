@@ -16,7 +16,21 @@
   },
   "gallery": {
     "title": "Galerie",
-    "description": "Galerie photo des événements passés et des reconstitutions"
+    "description": "Galerie photo des événements passés et des reconstitutions",
+    "upload": {
+      "title": "Télécharger une photo",
+      "selectFile": "Sélectionner un fichier image",
+      "caption": "Légende",
+      "captionPlaceholder": "Entrer la légende de la photo",
+      "altText": "Texte alternatif",
+      "altTextPlaceholder": "Entrer le texte alternatif pour l'accessibilité",
+      "upload": "Télécharger dans le cloud",
+      "uploading": "Téléchargement...",
+      "success": "Photo téléchargée avec succès !",
+      "failed": "Échec du téléchargement. Veuillez réessayer.",
+      "fileTooLarge": "Le fichier est trop volumineux. Taille maximale : 10 Mo.",
+      "invalidFileType": "Type de fichier invalide. Veuillez sélectionner une image."
+    }
   },
   "reenactment": {
     "title": "Reconstitution",
