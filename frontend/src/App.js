@@ -11,19 +11,17 @@ import ContactMessages from './components/Contact/ContactMessages';
 import Reenactment from './components/Reenactment/Reenactment';
 import { Routes, Route, useLocation, Navigate  } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
-import AdminGalleryManagement from './components/Admin/GalleryManagement';
 
 export default function App() {
+  const { isAdmin, isAuthenticated } = useAuth();
   const location = useLocation();
   const isHome = location.pathname === '/';
 
   const ProtectedRoute = ({ children }) => {
-    const { isAuthenticated } = useAuth();
     return isAuthenticated ? children : <Navigate to="/login" />;
   };
 
   const AdminContent = ({ userContent, adminContent }) => {
-    const { isAuthenticated } = useAuth();
     return isAuthenticated ? adminContent : userContent;
   };
 
@@ -37,14 +35,7 @@ export default function App() {
             <Route path="/"  element={<Home />} />
             <Route path="/startpage" element={<Startpage />} />
             <Route path="/events" element={<Events />} />
-            <Route 
-              path="/gallery" 
-              element={
-                <AdminContent
-                userContent={<Gallery />}
-                adminContent={<AdminGalleryManagement />}/> 
-              } 
-            /> 
+            <Route path="/gallery" element={<Gallery isAdmin={isAdmin} />} /> 
             <Route path="/reenactment" element={<Reenactment />} />
             <Route 
               path="/contact" 

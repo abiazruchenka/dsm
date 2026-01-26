@@ -17,8 +17,10 @@ const GalleryManagement = () => {
     const selectedFile = e.target.files[0];
     if (!selectedFile) return;
  
-    if (selectedFile.size > 20 * 1024 * 1024) {
+    if (selectedFile.size > 3 * 1024 * 1024) { // Max 3MB
       setError(t('gallery.upload.fileTooLarge'));
+      setFile(null);
+      setPreview(null);
       return;
     }
 

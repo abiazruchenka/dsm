@@ -1,16 +1,15 @@
 package de.dsm.backend.services;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import de.dsm.backend.models.entity.Photo;
 import de.dsm.backend.repositories.PhotoRepository;
 import org.imgscalr.Scalr;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
@@ -22,19 +21,17 @@ import java.util.Map;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class PhotoService {
 
-    @Autowired
-    private AmazonS3 s3Client;
+    private final S3Client s3Client;
+    private final PhotoRepository photoRepository;
 
     @Value("${storage.s3.bucket-name}")
     private String bucketName;
 
     @Value("${admin.image.thumbsize}")
     private int thumbSize;
-
-    @Autowired
-    private PhotoRepository photoRepository;
 
     public Photo uploadFile(MultipartFile file, String caption, String altText) throws IOException {
 
@@ -56,13 +53,12 @@ public class PhotoService {
 
             var thumbImage = Scalr.resize(image, Scalr.Method.AUTOMATIC, Scalr.Mode.FIT_TO_WIDTH, thumbSize);
 
-            // Upload original file
-            uploadToS3(objectKey, new ByteArrayInputStream(fileBytes), file.getContentType(), file.getSize());
+            uploadToS3(objectKey, fileBytes, file.getContentType());
 
             var thumbOs = new ByteArrayOutputStream();
             ImageIO.write(thumbImage, "webp", thumbOs);
             byte[] thumbBytes = thumbOs.toByteArray();
-            uploadToS3(thumbKey, new ByteArrayInputStream(thumbBytes), "image/webp", (long) thumbBytes.length);
+            uploadToS3(thumbKey, thumbBytes, "image/webp");
 
             Map<String, String> versions = new HashMap<>();
 
@@ -87,11 +83,20 @@ public class PhotoService {
         }
     }
 
-    private void uploadToS3(String key, InputStream is, String contentType, Long size) {
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(contentType);
-        metadata.setContentLength(size);
-        s3Client.putObject(new PutObjectRequest(bucketName, key, is, metadata)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
+    private void uploadToS3(String key, byte[] content, String contentType) {
+        try {
+            PutObjectRequest.Builder requestBuilder = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .contentType(contentType);
+
+            PutObjectRequest putObjectRequest = requestBuilder.build();
+            RequestBody requestBody = RequestBody.fromBytes(content);
+            
+            s3Client.putObject(putObjectRequest, requestBody);
+        } catch (software.amazon.awssdk.services.s3.model.S3Exception e) {
+            throw new RuntimeException("Failed to upload to S3: " + e.getMessage() + 
+                    " (Status: " + e.statusCode() + ", Request ID: " + e.requestId() + ")", e);
+        }
     }
 }

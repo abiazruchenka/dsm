@@ -21,17 +21,16 @@ CREATE TABLE IF NOT EXISTS events (
     updated_at TIMESTAMP
 );
 
+DROP TABLE IF EXISTS galleries CASCADE;
 create table if not exists galleries (
     id UUID PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    slug VARCHAR(255) NOT NULL,
+    image VARCHAR(255),
     description TEXT,
     is_published BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP
 );
-
-CREATE INDEX IF NOT EXISTS idx_galleries_slug ON galleries(slug);
 
 create table if not exists photos (
     id UUID PRIMARY KEY,
