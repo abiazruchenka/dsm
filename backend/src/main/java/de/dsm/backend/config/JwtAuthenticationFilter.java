@@ -32,6 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            logger.debug("No Authorization header or invalid format for request: " + request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
@@ -61,7 +62,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         } catch (Exception e) {
-            logger.error("Error processing JWT token", e);
+            logger.error("Error processing JWT token for request: " + request.getRequestURI(), e);
         }
 
         filterChain.doFilter(request, response);

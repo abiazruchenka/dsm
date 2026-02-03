@@ -8,13 +8,26 @@ const api = axios.create({
   },
 });
 
-// Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
+      if (config.url?.includes('/photos/upload')) {
+        console.log('Upload request - Token present:', token.substring(0, 20) + '...');
+        console.log('Upload request - Headers:', {
+          'Authorization': config.headers['Authorization']?.substring(0, 30) + '...',
+          'Content-Type': config.headers['Content-Type']
+        });
+      }
+    } else {
+      console.warn('No token found in localStorage for request:', config.url);
     }
+    
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type'];
+    }
+    
     return config;
   },
   (error) => {
@@ -22,14 +35,12 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor to handle common errors
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   (error) => {
     if (error.response?.status === 401) {
-      // Unauthorized - clear token and redirect to login
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.dispatchEvent(new CustomEvent('authStateChanged'));

@@ -28,8 +28,22 @@
             "uploading": "Wird hochgeladen...",
             "success": "Foto erfolgreich hochgeladen!",
             "failed": "Upload fehlgeschlagen. Bitte versuchen Sie es erneut.",
-            "fileTooLarge": "Datei ist zu groß. Maximale Größe ist 10MB.",
+            "fileTooLarge": "Datei ist zu groß. Maximale Größe ist 3MB.",
             "invalidFileType": "Ungültiger Dateityp. Bitte wählen Sie ein Bild aus."
+        },
+        "create": {
+            "title": "Galerie erstellen",
+            "titleLabel": "Galerie-Titel",
+            "titlePlaceholder": "Galerie-Titel eingeben",
+            "titleRequired": "Galerie-Titel ist erforderlich",
+            "descriptionLabel": "Beschreibung",
+            "descriptionPlaceholder": "Galerie-Beschreibung eingeben",
+            "published": "Veröffentlicht",
+            "create": "Galerie erstellen",
+            "creating": "Wird erstellt...",
+            "success": "Galerie erfolgreich erstellt!",
+            "failed": "Galerie konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+            "created": "Galerie erstellt! Sie können jetzt Fotos hochladen."
         }
     },
     "reenactment": {

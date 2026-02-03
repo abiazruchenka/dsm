@@ -1,7 +1,6 @@
 package de.dsm.backend.controllers;
 
 import de.dsm.backend.models.dto.PhotoResponse;
-import de.dsm.backend.models.entity.Photo;
 import de.dsm.backend.services.PhotoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,11 +11,14 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/photos")
@@ -33,29 +35,17 @@ public class PhotoController {
     public PhotoResponse uploadPhoto(
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "caption", required = false) String caption,
-            @RequestParam(value = "altText", required = false) String altText
+            @RequestParam(value = "altText", required = false) String altText,
+            @RequestParam(value = "galleryId", required = false) UUID galleryId,
+            @RequestParam(value = "blockId", required = false) UUID blockId
     ) throws IOException {
-        Photo photo = photoService.uploadFile(file, caption, altText);
-        return mapToResponse(photo);
+        return photoService.uploadFile(file, caption, altText, galleryId, blockId);
     }
 
-    private PhotoResponse mapToResponse(Photo photo) {
-        return PhotoResponse.builder()
-                .id(photo.getId())
-                .objectKey(photo.getObjectKey())
-                .bucket(photo.getBucket())
-                .originalName(photo.getOriginalName())
-                .contentType(photo.getContentType())
-                .sizeBytes(photo.getSizeBytes())
-                .width(photo.getWidth())
-                .height(photo.getHeight())
-                .versions(photo.getVersions())
-                .galleryId(photo.getGalleryId())
-                .caption(photo.getCaption())
-                .altText(photo.getAltText())
-                .sortOrder(photo.getSortOrder())
-                .isPublished(photo.getIsPublished())
-                .createdAt(photo.getCreatedAt())
-                .build();
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete a photo", description = "Deletes a photo from S3 and database")
+    public void deletePhoto(@PathVariable UUID id) {
+        photoService.deletePhoto(id);
     }
 }

@@ -59,17 +59,17 @@ public class Photo {
     @Column(name = "gallery_id")
     private UUID galleryId;
 
+    @Column(name = "block_id")
+    private UUID blockId;
+
     private String caption;
 
     @Column(name = "alt_text")
     private String altText;
 
     @Column(name = "sort_order")
-    private Integer sortOrder = 0;
-
-    @Column(name = "is_published", nullable = false)
     @Builder.Default
-    private Boolean isPublished = true;
+    private Integer sortOrder = 0;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

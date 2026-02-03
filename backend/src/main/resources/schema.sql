@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS events (
     updated_at TIMESTAMP
 );
 
-DROP TABLE IF EXISTS galleries CASCADE;
 create table if not exists galleries (
     id UUID PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -44,13 +43,14 @@ create table if not exists photos (
     height INTEGER,
     versions JSONB,
     gallery_id UUID,
+    block_id UUID,
 
     caption VARCHAR(255),
     alt_text VARCHAR(255),
     sort_order INTEGER DEFAULT 0,
-    is_published BOOLEAN NOT NULL DEFAULT TRUE,
 
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_photos_gallery_id ON photos(gallery_id);
+CREATE INDEX IF NOT EXISTS idx_photos_block_id ON photos(block_id);

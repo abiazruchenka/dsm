@@ -6,6 +6,7 @@ import Events from './components/Events/Events';
 import Gallery from './components/Gallery/Gallery';
 import Login from './components/Login/Login';
 import Admin from './components/Admin/Admin';
+import Album from './components/Gallery/Album';
 import Contact from './components/Contact/Contact';
 import ContactMessages from './components/Contact/ContactMessages';
 import Reenactment from './components/Reenactment/Reenactment';
@@ -54,6 +55,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            <Route path="/gallery/:galleryId" element={<Album isAdmin={isAdmin} />} />
 
             {/* 
             <Route path="/statute" element={<Statute />} />

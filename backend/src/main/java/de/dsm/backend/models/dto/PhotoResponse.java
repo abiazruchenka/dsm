@@ -23,10 +23,10 @@ public class PhotoResponse {
     private Integer width;
     private Integer height;
     private Map<String, String> versions;
+    private Map<String, String> versionKeys; 
     private UUID galleryId;
     private String caption;
     private String altText;
     private Integer sortOrder;
-    private Boolean isPublished;
     private LocalDateTime createdAt;
 }

@@ -28,8 +28,22 @@
             "uploading": "Uploading...",
             "success": "Photo uploaded successfully!",
             "failed": "Upload failed. Please try again.",
-            "fileTooLarge": "File is too large. Maximum size is 10MB.",
+            "fileTooLarge": "File is too large. Maximum size is 3MB.",
             "invalidFileType": "Invalid file type. Please select an image."
+        },
+        "create": {
+            "title": "Create Gallery",
+            "titleLabel": "Gallery Title",
+            "titlePlaceholder": "Enter gallery title",
+            "titleRequired": "Gallery title is required",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Enter gallery description",
+            "published": "Published",
+            "create": "Create Gallery",
+            "creating": "Creating...",
+            "success": "Gallery created successfully!",
+            "failed": "Failed to create gallery. Please try again.",
+            "created": "Gallery created! You can now upload photos."
         }
     },
     "reenactment": {

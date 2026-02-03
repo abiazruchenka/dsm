@@ -28,8 +28,22 @@
       "uploading": "Téléchargement...",
       "success": "Photo téléchargée avec succès !",
       "failed": "Échec du téléchargement. Veuillez réessayer.",
-      "fileTooLarge": "Le fichier est trop volumineux. Taille maximale : 10 Mo.",
+      "fileTooLarge": "Le fichier est trop volumineux. Taille maximale : 3 Mo.",
       "invalidFileType": "Type de fichier invalide. Veuillez sélectionner une image."
+    },
+    "create": {
+      "title": "Créer une galerie",
+      "titleLabel": "Titre de la galerie",
+      "titlePlaceholder": "Entrer le titre de la galerie",
+      "titleRequired": "Le titre de la galerie est requis",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Entrer la description de la galerie",
+      "published": "Publié",
+      "create": "Créer la galerie",
+      "creating": "Création en cours...",
+      "success": "Galerie créée avec succès !",
+      "failed": "Échec de la création de la galerie. Veuillez réessayer.",
+      "created": "Galerie créée ! Vous pouvez maintenant télécharger des photos."
     }
   },
   "reenactment": {
