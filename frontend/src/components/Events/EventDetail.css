@@ -306,7 +306,16 @@
   opacity: 0.8;
 }
 
-.loading,
+.loading {
+  color: var(--color-off-white);
+  background: transparent;
+  text-align: center;
+  padding: 8px 10px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 .error-message {
   color: #ff6b6b;
   background: transparent;

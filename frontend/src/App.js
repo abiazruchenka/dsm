@@ -35,7 +35,8 @@ export default function App() {
             <Route path="/startpage" element={<Startpage />} />
             <Route path="/events" element={<Events isAdmin={isAdmin}/>} />
             <Route path="/gallery" element={<Gallery isAdmin={isAdmin} />} /> 
-            <Route path="/reenactment" element={<Reenactment />} />
+            <Route path="/reenactment" element={<Reenactment isAdmin={isAdmin} />} />
+            <Route path="/reenactment/:blockId" element={<Reenactment isAdmin={isAdmin} />} />
             <Route 
               path="/contact" 
               element={

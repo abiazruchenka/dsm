@@ -14,7 +14,7 @@ export default function Album({ isAdmin }) {
     const [loadingGallery, setLoadingGallery] = useState(true);
     const [loadingPhotos, setLoadingPhotos] = useState(false);
     const [error, setError] = useState(null);
-    const [selectedPhoto, setSelectedPhoto] = useState(null);
+    const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(null);
 
     useEffect(() => {
         if (galleryId) {
@@ -27,6 +27,23 @@ export default function Album({ isAdmin }) {
             fetchPhotos(selectedGallery.id);
         }
     }, [selectedGallery]);
+
+    useEffect(() => {
+        if (selectedPhotoIndex == null) return;
+        const validPhotos = photos.filter(p => getOriginalPhotoUrl(p));
+        const onKeyDown = (e) => {
+            if (e.key === 'Escape') setSelectedPhotoIndex(null);
+            else if (e.key === 'ArrowLeft' && selectedPhotoIndex > 0) {
+                setSelectedPhotoIndex(selectedPhotoIndex - 1);
+                e.preventDefault();
+            } else if (e.key === 'ArrowRight' && selectedPhotoIndex < validPhotos.length - 1) {
+                setSelectedPhotoIndex(selectedPhotoIndex + 1);
+                e.preventDefault();
+            }
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => window.removeEventListener('keydown', onKeyDown);
+    }, [selectedPhotoIndex, photos]);
 
     const fetchGallery = async (id) => {
         try {
@@ -77,14 +94,20 @@ export default function Album({ isAdmin }) {
       };
     
       const handlePhotoClick = (photo) => {
-        const originalUrl = getOriginalPhotoUrl(photo);
-        if (originalUrl) {
-          setSelectedPhoto({
-            url: originalUrl,
-            caption: photo.caption || photo.altText || '',
-            alt: photo.altText || photo.caption || 'Photo'
-          });
-        }
+        const validPhotos = photos.filter(p => getOriginalPhotoUrl(p));
+        const index = validPhotos.findIndex(p => p.id === photo.id);
+        if (index >= 0) setSelectedPhotoIndex(index);
+      };
+
+      const handlePrevPhoto = (e) => {
+        e.stopPropagation();
+        if (selectedPhotoIndex > 0) setSelectedPhotoIndex(selectedPhotoIndex - 1);
+      };
+
+      const handleNextPhoto = (e) => {
+        e.stopPropagation();
+        const validPhotos = photos.filter(p => getOriginalPhotoUrl(p));
+        if (selectedPhotoIndex < validPhotos.length - 1) setSelectedPhotoIndex(selectedPhotoIndex + 1);
       };
 
       const handleDeleteGallery = async (galleryId, e) => {
@@ -184,7 +207,7 @@ export default function Album({ isAdmin }) {
       };
 
       const handleCloseModal = () => {
-        setSelectedPhoto(null);
+        setSelectedPhotoIndex(null);
       };
 
       const handlePhotoUploadSuccess = () => {
@@ -245,17 +268,26 @@ export default function Album({ isAdmin }) {
         );
       }
 
-      const PhotoModal = ({ photo, onClose }) => {
-        if (!photo) return null;
-    
+      const PhotoModal = () => {
+        const validPhotos = photos.filter(p => getOriginalPhotoUrl(p));
+        const photo = validPhotos[selectedPhotoIndex];
+        if (!photo || selectedPhotoIndex == null) return null;
+        const url = getOriginalPhotoUrl(photo);
+        const caption = photo.caption || photo.altText || '';
+        const hasPrev = selectedPhotoIndex > 0;
+        const hasNext = selectedPhotoIndex < validPhotos.length - 1;
         return (
-          <div className="photo-modal-overlay" onClick={onClose}>
+          <div className="photo-modal-overlay" onClick={handleCloseModal}>
             <div className="photo-modal-content" onClick={(e) => e.stopPropagation()}>
-              <button className="photo-modal-close" onClick={onClose}>×</button>
-              <img src={photo.url} alt={photo.alt} className="photo-modal-image" />
-              {photo.caption && (
-                <div className="photo-modal-caption">{photo.caption}</div>
+              <button className="photo-modal-close" onClick={handleCloseModal}>×</button>
+              {hasPrev && (
+                <button type="button" className="photo-modal-arrow photo-modal-prev" onClick={handlePrevPhoto} aria-label="Previous photo">‹</button>
               )}
+              <img src={url} alt={photo.altText || photo.caption || 'Photo'} className="photo-modal-image" />
+              {hasNext && (
+                <button type="button" className="photo-modal-arrow photo-modal-next" onClick={handleNextPhoto} aria-label="Next photo">›</button>
+              )}
+              {caption && <div className="photo-modal-caption">{caption}</div>}
             </div>
           </div>
         );
@@ -273,13 +305,13 @@ export default function Album({ isAdmin }) {
 
                
                 {selectedGallery.description && (
-                <p className="gallery-description">{selectedGallery.description}</p>
+                <p className="page-summary">{selectedGallery.description}</p>
                 )}
 
                 {loadingPhotos ? (
                 <div className="loading">{t('gallery.album.loadingPhotos')}</div>
                 ) : photos.length === 0 ? (
-                <div className="no-photos">{t('gallery.album.noPhotos')}</div>
+                <div className="page-empty">{t('gallery.album.noPhotos')}</div>
                 ) : (
                 <div className="galleries-grid" role="list">
                     {photos.map((photo) => {
@@ -323,14 +355,16 @@ export default function Album({ isAdmin }) {
                             loading="lazy"
                             style={{ cursor: 'pointer' }}
                         />
+                     {photo.caption && (
                         <div className="gallery-overlay">
                             <span className="gallery-zoom">
                             {photo.caption || 'Photo'}
                             </span>
                         </div>
+                     )}
                     </div>
-                    );
-                    })}
+                    );      
+                    })} 
                 </div>
                 )}
 
@@ -376,9 +410,7 @@ export default function Album({ isAdmin }) {
                 </div>
                 )}
 
-            {selectedPhoto && (
-                <PhotoModal photo={selectedPhoto} onClose={handleCloseModal} />
-            )}
+            {selectedPhotoIndex != null && <PhotoModal />}
             </div>
             </section>
         </main>

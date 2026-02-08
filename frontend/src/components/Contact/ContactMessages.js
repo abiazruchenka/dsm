@@ -74,7 +74,7 @@ export default function ContactMessages() {
       <section className="contact-messages-container">
         <div className="contact-messages-inner">
         <h2 className="contact-messages-title">{t('contactMessages.title')}</h2>
-        <p className="messages-summary">
+        <p className="page-summary">
           {t('contactMessages.totalMessages')}: {totalElements}
         </p>
 
@@ -82,7 +82,7 @@ export default function ContactMessages() {
         {error && <div className="error-message">{error}</div>}
 
         {!loading && contacts.length === 0 && (
-          <div className="no-messages">{t('contactMessages.noMessages')}</div>
+          <div className="page-empty">{t('contactMessages.noMessages')}</div>
         )}
 
         {!loading && contacts.length > 0 && (

@@ -46,6 +46,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/contact/**").permitAll()
                 .requestMatchers("/api/events/**").permitAll()
                 .requestMatchers("/api/galleries/**").permitAll()
+                .requestMatchers("/api/reenactment/categories").authenticated()
+                .requestMatchers("/api/reenactment/blocks/**").permitAll()
+                .requestMatchers("/api/reenactment/**").permitAll()
                 .requestMatchers("/api/galleries/all").authenticated()
                 .requestMatchers("/api/photos/**").authenticated()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
@@ -60,7 +63,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
+        
         List<String> origins = Arrays.stream(allowedOrigins.split(","))
                 .map(String::trim)
                 .filter(origin -> !origin.isEmpty())

@@ -100,14 +100,47 @@
 .image-uploader .upload-previews {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 16px;
   margin-top: 10px;
+}
+
+.image-uploader .upload-preview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 180px;
 }
 
 .image-uploader .upload-preview {
   position: relative;
   display: inline-block;
   max-width: 150px;
+}
+
+.image-uploader .upload-preview-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.image-uploader .upload-preview-meta input {
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  color: var(--color-off-white);
+  width: 100%;
+}
+
+.image-uploader .upload-preview-meta input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.image-uploader .upload-previews-actions {
+  width: 100%;
+  flex-basis: 100%;
+  margin-top: 4px;
 }
 
 .image-uploader .upload-preview img {
@@ -137,6 +170,17 @@
 
 .image-uploader .remove-preview-btn:hover {
   background-color: #c0392b;
+}
+
+.image-uploader .clear-all-btn {
+  padding: 6px 12px;
+  height: 32px;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--color-off-white);
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .image-uploader .upload-button {

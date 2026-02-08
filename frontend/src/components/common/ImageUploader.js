@@ -17,8 +17,6 @@ const ImageUploader = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const [caption, setCaption] = useState('');
-  const [altText, setAltText] = useState('');
 
   const onFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files || []);
@@ -42,7 +40,9 @@ const ImageUploader = ({
       newPreviews.push({
         file,
         url: URL.createObjectURL(file),
-        name: file.name
+        name: file.name,
+        caption: '',
+        altText: ''
       });
     }
 
@@ -69,11 +69,12 @@ const ImageUploader = ({
     }
 
     try {
-      const uploadPromises = files.map(file => {
+      const uploadPromises = files.map((file, index) => {
+        const preview = previews[index] || {};
         const formData = new FormData();
         formData.append('file', file);
-        if (caption) formData.append('caption', caption);
-        if (altText) formData.append('altText', altText);
+        if (preview.caption) formData.append('caption', preview.caption);
+        if (preview.altText) formData.append('altText', preview.altText);
         if (galleryId) formData.append('galleryId', galleryId);
         
         return api.post(uploadEndpoint, formData);
@@ -84,8 +85,6 @@ const ImageUploader = ({
       setSuccess(true);
       setFiles([]);
       setPreviews([]);
-      setCaption('');
-      setAltText('');
 
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput) fileInput.value = '';
@@ -110,6 +109,12 @@ const ImageUploader = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const updatePreviewMeta = (index, field, value) => {
+    setPreviews(prev => prev.map((p, i) =>
+      i === index ? { ...p, [field]: value } : p
+    ));
   };
 
   const removeFile = (index) => {
@@ -162,58 +167,53 @@ const ImageUploader = ({
         {previews.length > 0 && (
           <div className="upload-previews">
             {previews.map((preview, index) => (
-              <div key={index} className="upload-preview">
-                <img src={preview.url} alt={preview.name || 'Preview'} />
-                <button
-                  onClick={() => removeFile(index)}
-                  className="remove-preview-btn"
-                  type="button"
-                  title="Remove"
-                >
-                  ×
-                </button>
+              <div key={index} className="upload-preview-card">
+                <div className="upload-preview">
+                  <img src={preview.url} alt={preview.name || 'Preview'} />
+                  <button
+                    onClick={() => removeFile(index)}
+                    className="remove-preview-btn"
+                    type="button"
+                    title="Remove"
+                  >
+                    ×
+                  </button>
+                </div>
+                {(showCaption || showAltText) && (
+                  <div className="upload-preview-meta">
+                    {showCaption && (
+                      <input
+                        type="text"
+                        value={preview.caption || ''}
+                        onChange={(e) => updatePreviewMeta(index, 'caption', e.target.value)}
+                        placeholder={t('gallery.upload.captionPlaceholder')}
+                        disabled={loading}
+                        className="upload-preview-caption"
+                      />
+                    )}
+                    {showAltText && (
+                      <input
+                        type="text"
+                        value={preview.altText || ''}
+                        onChange={(e) => updatePreviewMeta(index, 'altText', e.target.value)}
+                        placeholder={t('gallery.upload.altTextPlaceholder')}
+                        disabled={loading}
+                        className="upload-preview-alt"
+                      />
+                    )}
+                  </div>
+                )}
               </div>
             ))}
-            {previews.length > 0 && (
+            <div className="upload-previews-actions">
               <button
                 onClick={clearAll}
                 className="clear-all-btn"
                 type="button"
-                style={{ marginTop: '10px', padding: '4px 8px', height: '30px' }}
               >
                 Clear All
               </button>
-            )}
-          </div>
-        )}
-
-        {showCaption && (
-          <div className="form-group">
-            <label htmlFor="caption-input" className="visually-hidden">{t('gallery.upload.caption')}</label>
-            <input
-              id="caption-input"
-              type="text"
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              placeholder={t('gallery.upload.captionPlaceholder')}
-              disabled={loading}
-              aria-label={t('gallery.upload.caption')}
-            />
-          </div>
-        )}
-
-        {showAltText && (
-          <div className="form-group">
-            <label htmlFor="alt-text-input" className="visually-hidden">{t('gallery.upload.altText')}</label>
-            <input
-              id="alt-text-input"
-              type="text"
-              value={altText}
-              onChange={(e) => setAltText(e.target.value)}
-              placeholder={t('gallery.upload.altTextPlaceholder')}
-              disabled={loading}
-              aria-label={t('gallery.upload.altText')}
-            />
+            </div>
           </div>
         )}
 

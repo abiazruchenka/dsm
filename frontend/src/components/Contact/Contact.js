@@ -52,7 +52,7 @@ export default function Contact() {
             <div className="contact-card">
               <div className="contact-body">
                 <h2 className="contact-title">{t('contact.title')}</h2>
-                <p className="contact-description">
+                <p className="page-summary">
                   {t('contact.description')}
                 </p>
 

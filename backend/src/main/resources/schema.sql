@@ -53,3 +53,26 @@ CREATE TABLE IF NOT EXISTS photos (
 );
 
 CREATE INDEX IF NOT EXISTS idx_photos_gallery_id ON photos(gallery_id);
+
+CREATE TABLE IF NOT EXISTS reenactment_categories (
+    id UUID PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    name_de VARCHAR(255) NOT NULL,
+    name_en VARCHAR(255) NOT NULL,
+    name_fr VARCHAR(255) NOT NULL,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS blocks (
+    id UUID PRIMARY KEY,
+    title VARCHAR(255),
+    text TEXT,
+    image VARCHAR(255),
+    category_id UUID REFERENCES reenactment_categories(id) ON DELETE SET NULL,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_blocks_sort_order ON blocks(sort_order);
+CREATE INDEX IF NOT EXISTS idx_blocks_category_id ON blocks(category_id);

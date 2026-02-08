@@ -132,3 +132,37 @@ main::before {
   background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,250,240,0.98));
   background-blend-mode: multiply;
 }
+
+/* Shared page summary/description - same across Gallery, Events, Reenactment, Contact */
+.page-summary {
+  margin: 16px 0 24px;
+  padding: 0 8px;
+  font-size: 18px;
+  font-family: var(--font-body);
+  line-height: 1.6;
+  color: var(--color-off-white);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Shared empty/loading states */
+.page-empty,
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  font-size: 18px;
+  font-family: var(--font-body);
+  line-height: 1.6;
+  color: var(--color-off-white);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.error-message {
+  color: #ff6b6b;
+  background: transparent;
+  text-align: center;
+  padding: 8px 10px;
+  margin: 16px 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}

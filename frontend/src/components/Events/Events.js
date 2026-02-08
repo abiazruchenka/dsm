@@ -66,15 +66,15 @@ export default function Events({ isAdmin }) {
       <section className="events-page">
         <div className="events-inner">
           <h2 className="events-title">{t('events.title')}</h2>
-          <p className="events-summary">
-            {t('events.totalEvents')}: {totalElements}
+          <p className="page-summary">
+            {t('events.description')}
           </p>
           
           {loading && <div className="loading">{t('events.loading')}</div>}
           {error && <div className="error-message">{error || t('events.loadFailed')}</div>}
           
           {!loading && !error && events.length === 0 && (
-            <div className="no-events">{t('events.noEvents')}</div>
+            <div className="page-empty">{t('events.noEvents')}</div>
           )}
           
           {!loading && !error && events.length > 0 && (

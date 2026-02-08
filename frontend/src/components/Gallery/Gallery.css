@@ -55,7 +55,7 @@
   position: absolute;
   inset: 0;
   display: flex;
-  align-items: center;
+  align-items: end;
   justify-content: center;
   background: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,0.35) 100%);
   opacity: 0;
@@ -100,24 +100,6 @@
   box-shadow: inset 0 -1px 0 rgba(255,255,255,0.03);
 }
 
-.loading,
-.no-photos {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--color-off-white);
-  font-size: 16px;
-  font-family: var(--font-body);
-}
-
-.error-message {
-  color: #ff6b6b;
-  background: transparent;
-  text-align: center;
-  padding: 8px 10px;
-  font-family: var(--font-body);
-  font-size: 15px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
 
 .galleries-list {
   display: flex;
@@ -283,15 +265,6 @@
 .back-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.gallery-description {
-  margin: 16px 0;
-  padding: 0 8px;
-  color: var(--color-off-white);
-  font-size: 16px;
-  font-family: var(--font-body);
-  line-height: 1.6;
 }
 
 @media (min-width: 600px) {
@@ -545,8 +518,10 @@
   max-width: 95vw;
   max-height: 95vh;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
+  gap: 12px;
   cursor: default;
   animation: slideUp 0.3s ease;
 }
@@ -591,7 +566,7 @@
   transform: translateY(-1px) scale(1.05);
 }
 
-.photo-modal-image {
+.photo-modal-content > img.photo-modal-image {
   max-width: 100%;
   max-height: 85vh;
   object-fit: contain;
@@ -600,8 +575,36 @@
   background: rgba(10, 10, 11, 0.3);
 }
 
+.photo-modal-arrow {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-off-white);
+  font-size: 32px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.photo-modal-arrow:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
 .photo-modal-caption {
-  margin-top: 20px;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   color: var(--color-off-white);
   text-align: center;
   font-size: 1rem;

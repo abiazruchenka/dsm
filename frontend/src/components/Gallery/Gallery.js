@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import './Gallery.css';
-import Divider from '../common/Divider';
 import GalleryManagement from './GalleryManagement';
 import api from '../../config/axios';
 import { useNavigate } from 'react-router-dom';
@@ -37,9 +36,7 @@ export default function Gallery({ isAdmin }) {
     return (
       <section className="gallery-container">
         <div className="gallery-inner">
-          <Divider />
           <h2 className="gallery-title">{t('gallery.title')}</h2>
-          <Divider />
           <div className="loading">{t('gallery.list.loading')}</div>
         </div>
       </section>
@@ -50,9 +47,7 @@ export default function Gallery({ isAdmin }) {
     return (
       <section className="gallery-container">
         <div className="gallery-inner">
-          <Divider />
           <h2 className="gallery-title">{t('gallery.title')}</h2>
-          <Divider />
           <div className="error-message">{error}</div>
         </div>
       </section>
@@ -64,9 +59,11 @@ export default function Gallery({ isAdmin }) {
       <section className="gallery-container">
         <div className="gallery-inner">
           <h2 className="gallery-title">{t('gallery.title')}</h2>
-
+          <p className="page-summary">
+            {t('gallery.description')}
+          </p>
           {galleries.length === 0 ? (
-            <div className="no-photos">{t('gallery.list.noGalleries')}</div>
+            <div className="page-empty">{t('gallery.list.noGalleries')}</div>
           ) : (
             <div className="galleries-grid" role="list">
               {galleries.map((gallery) => (
