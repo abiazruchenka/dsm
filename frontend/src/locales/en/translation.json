@@ -12,7 +12,45 @@
     },
     "events": {
         "title": "Events",
-        "description": "Upcoming reenactment events and historical demonstrations"
+        "description": "Upcoming reenactment events and historical demonstrations",
+        "totalEvents": "Total events",
+        "loading": "Loading events...",
+        "noEvents": "No events available yet.",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page",
+        "of": "of",
+        "loadFailed": "Failed to load events",
+        "create": {
+            "title": "Create New Event",
+            "eventTitle": "Event Title",
+            "eventTitlePlaceholder": "Event Title",
+            "eventDescription": "Event Description",
+            "eventDescriptionPlaceholder": "Event Description",
+            "eventImage": "Event Image",
+            "eventLink": "Event Link",
+            "eventLinkPlaceholder": "Event Link (optional)",
+            "eventDate": "Event Date",
+            "titleRequired": "Event title is required",
+            "descriptionRequired": "Event description is required",
+            "creating": "Creating...",
+            "create": "Create Event",
+            "success": "Event created successfully!",
+            "failed": "Failed to create event",
+            "remove": "Remove"
+        },
+        "edit": {
+            "title": "Edit Event",
+            "save": "Save Changes",
+            "saving": "Saving...",
+            "delete": "Delete Event",
+            "deleteConfirm": "Are you sure you want to delete this event? This action cannot be undone.",
+            "backToEvents": "Back to Events",
+            "viewGallery": "View Gallery",
+            "currentImage": "Current image:",
+            "failed": "Failed to update event",
+            "deleteFailed": "Failed to delete event"
+        }
     },
     "gallery": {
         "title": "Gallery",
@@ -44,6 +82,31 @@
             "success": "Gallery created successfully!",
             "failed": "Failed to create gallery. Please try again.",
             "created": "Gallery created! You can now upload photos."
+        },
+        "album": {
+            "loadingGallery": "Loading gallery...",
+            "loadingPhotos": "Loading photos...",
+            "noPhotos": "No photos available yet.",
+            "galleryNotFound": "Gallery not found",
+            "loadFailed": "Failed to load gallery",
+            "deleteFailed": "Failed to delete gallery",
+            "deleteConfirm": "Are you sure you want to delete this gallery? This action cannot be undone.",
+            "photoDeleteFailed": "Failed to delete photo",
+            "photoDeleteConfirm": "Are you sure you want to delete this photo?",
+            "setMainFailed": "Failed to set main photo",
+            "updateStatusFailed": "Failed to update gallery status",
+            "setAsMain": "Set as main",
+            "deletePhoto": "Delete Photo",
+            "backToGalleries": "Back to Galleries",
+            "published": "Published",
+            "remove": "Remove",
+            "preview": "Preview",
+            "deleteGallery": "Delete Gallery"
+        },
+        "list": {
+            "loading": "Loading galleries...",
+            "loadFailed": "Failed to load galleries",
+            "noGalleries": "No galleries available yet."
         }
     },
     "reenactment": {

@@ -21,6 +21,12 @@ export default function Login() {
       [e.target.name]: e.target.value
     });
   };
+  
+  const handleFocus = (e) => {
+    if (error && e.target.value === '') {
+      setError('');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,58 +49,62 @@ export default function Login() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
+    <main className="page-content home-background">
+      <div className="login-container">
+        <div className="login-card">
 
-        <div className="login-body">
-          <h2 className="login-title">{t('login.login')}</h2>
+          <div className="login-body">
+            <h2 className="login-title">{t('login.login')}</h2>
 
-          {error && <div className="login-error">{error}</div>}
+            {error && <div className="login-error">{error}</div>}
 
-          <form onSubmit={handleSubmit} className="login-form">
-            <div className="form-row">
-              <label htmlFor="email" className="visually-hidden">{t('login.email')}</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder={t('login.email')}
-                aria-label={t('login.email')}
-                value={formData.email}
-                onChange={handleChange}
-                required
-                autoComplete="email"
-              />
-            </div>
+            <form onSubmit={handleSubmit} className="login-form">
+              <div className="form-row">
+                <label htmlFor="email" className="visually-hidden">{t('login.email')}</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder={t('login.email')}
+                  aria-label={t('login.email')}
+                  value={formData.email}
+                  onChange={handleChange}
+                  onFocus={handleFocus}
+                  required
+                  autoComplete="email"
+                />
+              </div>
 
-            <div className="form-row">
-              <label htmlFor="password" className="visually-hidden">{t('login.password')}</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder={t('login.password')}
-                aria-label={t('login.password')}
-                value={formData.password}
-                onChange={handleChange}
-                required
-                autoComplete="current-password"
-              />
-            </div>
+              <div className="form-row">
+                <label htmlFor="password" className="visually-hidden">{t('login.password')}</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder={t('login.password')}
+                  aria-label={t('login.password')}
+                  value={formData.password}
+                  onChange={handleChange}
+                  onFocus={handleFocus}
+                  required
+                  autoComplete="current-password"
+                />
+              </div>
 
-            <div className="login-form-actions">
-              <button type="submit" className="btn primary" disabled={loading}>
-                {loading ? t('login.loggingIn') : t('login.login')}
-              </button>
-            </div>
-          </form>
+              <div className="login-form-actions">
+                <button type="submit" className="btn primary" disabled={loading}>
+                  {loading ? t('login.loggingIn') : t('login.login')}
+                </button>
+              </div>
+            </form>
 
-          <p className="login-register">
-            {t('login.dontHaveAccount')}
-          </p>
+            <p className="login-register">
+              {t('login.dontHaveAccount')}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

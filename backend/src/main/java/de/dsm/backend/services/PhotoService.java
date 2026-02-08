@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import javax.imageio.ImageIO;
@@ -39,7 +40,7 @@ public class PhotoService {
     @Value("${admin.image.thumbsize}")
     private int thumbSize;
 
-    public PhotoResponse uploadFile(MultipartFile file, String caption, String altText, UUID galleryId, UUID blockId) throws IOException {
+    public PhotoResponse uploadFile(MultipartFile file, String caption, String altText, UUID galleryId) throws IOException {
 
         byte[] fileBytes = file.getBytes();
 
@@ -89,13 +90,9 @@ public class PhotoService {
                 photoBuilder.galleryId(galleryId);
             }
 
-            if (blockId != null) {
-                photoBuilder.blockId(blockId);
-            }
-
             var photo = photoBuilder.build();
-            photoRepository.save(photo);
-            return mapToPhotoResponse(photo);
+            var photoResult = photoRepository.save(photo);
+            return mapToPhotoResponse(photoResult);
         }
     }
 
@@ -107,13 +104,51 @@ public class PhotoService {
     }
 
     public void deletePhoto(UUID id) {
-        if (!photoRepository.existsById(id)) {
-            throw new RuntimeException("Photo not found");
-        }
+        var photo = photoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Photo not found"));
 
-        // TODO: remove from S3
+        deletePhotoFromS3(photo);
 
         photoRepository.deleteById(id);
+    }
+
+    public void deletePhotosByGalleryId(UUID galleryId) {
+        List<Photo> photos = photoRepository.findByGalleryIdOrderBySortOrderAsc(galleryId);
+        
+        for (Photo photo : photos) {
+            deletePhotoFromS3(photo);
+        }
+        
+        photoRepository.deleteAll(photos);
+    }
+
+    private void deletePhotoFromS3(Photo photo) {
+        try {
+            if (photo.getVersions() != null) {
+                for (String key : photo.getVersions().values()) {
+                    deleteFromS3(key);
+                }
+            }
+
+            if (photo.getObjectKey() != null && 
+                (photo.getVersions() == null || !photo.getVersions().containsValue(photo.getObjectKey()))) {
+                deleteFromS3(photo.getObjectKey());
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to delete photo from S3: " + e.getMessage());
+        }
+    }
+
+    private void deleteFromS3(String key) {
+        try {
+            DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+            s3Client.deleteObject(deleteRequest);
+        } catch (Exception e) {
+            System.err.println("Failed to delete object from S3 (key: " + key + "): " + e.getMessage());
+        }
     }
 
     private BufferedImage createThumbnail(BufferedImage originalImage, int maxWidth) {

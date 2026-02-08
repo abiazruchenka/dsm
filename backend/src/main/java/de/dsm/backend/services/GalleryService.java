@@ -6,6 +6,7 @@ import de.dsm.backend.models.entity.Gallery;
 import de.dsm.backend.repositories.GalleryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 public class GalleryService {
     private final S3UrlService s3UrlService;
     private final GalleryRepository galleryRepository;
+    private final PhotoService photoService;
 
     public GalleryResponse createGallery(GalleryRequest galleryRequest) {
         var gallery = new Gallery(galleryRequest.title(), null, galleryRequest.description(), galleryRequest.is_published());
@@ -59,7 +61,10 @@ public class GalleryService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteGallery(UUID id) {
+        photoService.deletePhotosByGalleryId(id);
+        
         galleryRepository.deleteById(id);
     }
 

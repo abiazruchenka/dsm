@@ -78,7 +78,7 @@ const GalleryManagement = () => {
 
       <div className="gallery-form">
         <div className="form-group">
-          <label htmlFor="gallery-title-input">{t('gallery.create.titleLabel')}</label>
+          <label htmlFor="gallery-title-input" className="visually-hidden">{t('gallery.create.titleLabel')}</label>
           <input
             id="gallery-title-input"
             type="text"
@@ -86,11 +86,12 @@ const GalleryManagement = () => {
             onChange={(e) => setGalleryTitle(e.target.value)}
             placeholder={t('gallery.create.titlePlaceholder')}
             disabled={loading || !!galleryId}
+            aria-label={t('gallery.create.titleLabel')}
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="gallery-description-input">{t('gallery.create.descriptionLabel')}</label>
+          <label htmlFor="gallery-description-input" className="visually-hidden">{t('gallery.create.descriptionLabel')}</label>
           <textarea
             id="gallery-description-input"
             value={galleryDescription}
@@ -98,6 +99,7 @@ const GalleryManagement = () => {
             placeholder={t('gallery.create.descriptionPlaceholder')}
             disabled={loading || !!galleryId}
             rows={4}
+            aria-label={t('gallery.create.descriptionLabel')}
           />
         </div>
 
@@ -124,13 +126,15 @@ const GalleryManagement = () => {
         )}
 
         {!galleryId ? (
-          <button
-            onClick={createGallery}
-            disabled={!galleryTitle.trim() || loading}
-            className="upload-button"
-          >
-            {loading ? t('gallery.create.creating') : t('gallery.create.create')}
-          </button>
+          <div className="form-actions">
+            <button
+              onClick={createGallery}
+              disabled={!galleryTitle.trim() || loading}
+              className="upload-button"
+            >
+              {loading ? t('gallery.create.creating') : t('gallery.create.create')}
+            </button>
+          </div>
         ) : (
           <div className="gallery-created">
             <p>{t('gallery.create.created')}</p>

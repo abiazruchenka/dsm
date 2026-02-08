@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS contacts (
     read_at TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_contacts_email ON contact(email);
+CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
 
 CREATE TABLE IF NOT EXISTS events (
     id UUID PRIMARY KEY,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS events (
     updated_at TIMESTAMP
 );
 
-create table if not exists galleries (
+CREATE TABLE IF NOT EXISTS galleries (
     id UUID PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     image VARCHAR(255),
@@ -31,7 +31,7 @@ create table if not exists galleries (
     updated_at TIMESTAMP
 );
 
-create table if not exists photos (
+CREATE TABLE IF NOT EXISTS photos (
     id UUID PRIMARY KEY,
     object_key VARCHAR(500) NOT NULL UNIQUE,
     bucket VARCHAR(255) NOT NULL,
@@ -53,4 +53,3 @@ create table if not exists photos (
 );
 
 CREATE INDEX IF NOT EXISTS idx_photos_gallery_id ON photos(gallery_id);
-CREATE INDEX IF NOT EXISTS idx_photos_block_id ON photos(block_id);

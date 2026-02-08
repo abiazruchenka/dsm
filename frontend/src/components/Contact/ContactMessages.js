@@ -70,78 +70,92 @@ export default function ContactMessages() {
   };
 
   return (
-    <div className="contact-messages-container">
-      <h2>{t('contactMessages.title')}</h2>
-      <p className="messages-summary">
-        {t('contactMessages.totalMessages')}: {totalElements}
-      </p>
+    <main className={`page-content page-background`}>
+      <section className="contact-messages-container">
+        <div className="contact-messages-inner">
+        <h2 className="contact-messages-title">{t('contactMessages.title')}</h2>
+        <p className="messages-summary">
+          {t('contactMessages.totalMessages')}: {totalElements}
+        </p>
 
-      {loading && <div className="loading">{t('contactMessages.loading')}</div>}
-      {error && <div className="error-message">{error}</div>}
+        {loading && <div className="loading">{t('contactMessages.loading')}</div>}
+        {error && <div className="error-message">{error}</div>}
 
-      {!loading && contacts.length === 0 && (
-        <div className="no-messages">{t('contactMessages.noMessages')}</div>
-      )}
+        {!loading && contacts.length === 0 && (
+          <div className="no-messages">{t('contactMessages.noMessages')}</div>
+        )}
 
-      {!loading && contacts.length > 0 && (
-        <>
-          <div className="messages-list">
-            {contacts.map((contact) => (
-              <div 
-                key={contact.id} 
-                className={`message-card ${!contact.read ? 'unread' : ''}`}
-                onClick={!contact.read ? () => handleRead(contact.id) : undefined}
-                style={!contact.read ? { cursor: 'pointer' } : undefined}
-              >
-                <div className="message-header">
-                  <div className="message-info">
-                    <strong className="message-name">{contact.name}</strong>
-                    <span className="message-email">{contact.email}</span>
-                    <span className="message-date">{formatDate(contact.createdAt)}</span>
+        {!loading && contacts.length > 0 && (
+          <>
+            <div className="messages-list">
+              {contacts.map((contact) => (
+                <div 
+                  key={contact.id} 
+                  className={`message-card ${!contact.read ? 'unread' : ''}`}
+                  onClick={!contact.read ? () => handleRead(contact.id) : undefined}
+                  style={!contact.read ? { cursor: 'pointer' } : undefined}
+                >
+                  <div className="message-header">
+                    <div className="message-info">
+                      <strong className="message-name">{contact.name}</strong>
+                      <span className="message-email">{contact.email}</span>
+                      <span className="message-date">{formatDate(contact.createdAt)}</span>
+                    </div>
+                    <div className="message-actions">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(contact.id);
+                        }}
+                        className="btn-delete"
+                        title={t('contactMessages.delete')}
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
-                  <div className="message-actions">
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(contact.id);
-                      }}
-                      className="btn-delete"
-                      title={t('contactMessages.delete')}
-                    >
-                      ×
-                    </button>
+                  <div className="message-content">
+                    <p>{contact.message}</p>
                   </div>
                 </div>
-                <div className="message-content">
-                  <p>{contact.message}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {totalPages > 1 && (
-            <div className="pagination">
-              <button 
-                onClick={() => setPage(p => Math.max(0, p - 1))}
-                disabled={page === 0}
-                className="page-btn"
-              >
-                ← {t('contactMessages.previous')}
-              </button>
-              <span className="page-info">
-                {t('contactMessages.page')} {page + 1} {t('contactMessages.of')} {totalPages}
-              </span>
-              <button 
-                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-                disabled={page >= totalPages - 1}
-                className="page-btn"
-              >
-                {t('contactMessages.next')} →
-              </button>
+              ))}
             </div>
-          )}
-        </>
-      )}
-    </div>
+
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button 
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setPage(p => Math.max(0, p - 1));
+                  }}
+                  disabled={page === 0}
+                  className="upload-button"
+                >
+                  ← {t('contactMessages.previous')}
+                </button>
+                <span className="page-info">
+                  {t('contactMessages.page')} {page + 1} {t('contactMessages.of')} {totalPages}
+                </span>
+                <button 
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setPage(p => Math.min(totalPages - 1, p + 1));
+                  }}
+                  disabled={page >= totalPages - 1}
+                  className="upload-button"
+                >
+                  {t('contactMessages.next')} →
+                </button>
+              </div>
+            )}
+          </>
+        )}
+        </div>
+      </section>
+    </main>
   );
 }

@@ -20,22 +20,17 @@ public class S3UrlService {
             return null;
         }
 
-        // If Friendly URL base is configured, use it
         if (friendlyUrlBase != null && !friendlyUrlBase.trim().isEmpty()) {
             String base = friendlyUrlBase.trim();
-            // Ensure base ends with /
             if (!base.endsWith("/")) {
                 base += "/";
             }
-            // Remove leading / from objectKey if present
             String cleanKey = objectKey.startsWith("/") ? objectKey.substring(1) : objectKey;
             return base + bucketName + "/" + cleanKey;
         }
 
-        // Fallback to S3 API URL
         if (s3Endpoint != null && !s3Endpoint.trim().isEmpty()) {
             String endpoint = s3Endpoint.trim();
-            // Remove protocol if present
             if (endpoint.startsWith("http://") || endpoint.startsWith("https://")) {
                 endpoint = endpoint.replaceFirst("^https?://", "");
             }

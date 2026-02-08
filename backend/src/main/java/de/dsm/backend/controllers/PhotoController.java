@@ -36,10 +36,9 @@ public class PhotoController {
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "caption", required = false) String caption,
             @RequestParam(value = "altText", required = false) String altText,
-            @RequestParam(value = "galleryId", required = false) UUID galleryId,
-            @RequestParam(value = "blockId", required = false) UUID blockId
+            @RequestParam(value = "galleryId", required = false) UUID galleryId
     ) throws IOException {
-        return photoService.uploadFile(file, caption, altText, galleryId, blockId);
+        return photoService.uploadFile(file, caption, altText, galleryId);
     }
 
     @DeleteMapping("/{id}")

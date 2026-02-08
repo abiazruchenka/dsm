@@ -1,5 +1,6 @@
 export default function Admin(){
 return(
+    <main className={`page-content page-background`}>
         <div className="container">
             <div style={{ textAlign: 'center', padding: '50px 0' }}>
             <h1>Admin</h1>
@@ -8,5 +9,6 @@ return(
             </p>
         </div>
         </div>
+    </main>
     );
 }

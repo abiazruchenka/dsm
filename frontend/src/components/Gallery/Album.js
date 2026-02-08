@@ -3,8 +3,10 @@ import Divider from '../common/Divider';
 import ImageUploader from '../common/ImageUploader';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function Album({ isAdmin }) {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { galleryId } = useParams();
     const [selectedGallery, setSelectedGallery] = useState(null);
@@ -37,15 +39,15 @@ export default function Album({ isAdmin }) {
                 if (gallery) {
                     setSelectedGallery(gallery);
                 } else {
-                    setError('Gallery not found');
+                    setError(t('gallery.album.galleryNotFound'));
                 }
             } catch (apiErr) {
                 console.error('Error fetching galleries list:', apiErr);
-                setError('Failed to load gallery');
+                setError(t('gallery.album.loadFailed'));
             }
         } catch (err) {
             console.error('Error loading gallery:', err);
-            setError('Failed to load gallery');
+            setError(t('gallery.album.loadFailed'));
         } finally {
             setLoadingGallery(false);
         }
@@ -90,7 +92,7 @@ export default function Album({ isAdmin }) {
           e.stopPropagation();
         }
         
-        if (!window.confirm('Are you sure you want to delete this gallery? This action cannot be undone.')) {
+        if (!window.confirm(t('gallery.album.deleteConfirm'))) {
           return;
         }
     
@@ -102,7 +104,7 @@ export default function Album({ isAdmin }) {
           }
         } catch (err) {
           console.error('Error deleting gallery:', err);
-          setError('Failed to delete gallery');
+          setError(t('gallery.album.deleteFailed'));
         }
       };
 
@@ -111,7 +113,7 @@ export default function Album({ isAdmin }) {
           e.stopPropagation();
         }
         
-        if (!window.confirm('Are you sure you want to delete this photo?')) {
+        if (!window.confirm(t('gallery.album.photoDeleteConfirm'))) {
           return;
         }
     
@@ -122,7 +124,7 @@ export default function Album({ isAdmin }) {
             }
         } catch (err) {
           console.error('Error deleting photo:', err);
-          setError('Failed to delete photo');
+          setError(t('gallery.album.photoDeleteFailed'));
         }
       };
 
@@ -155,7 +157,7 @@ export default function Album({ isAdmin }) {
           }
         } catch (err) {
           console.error('Error setting main photo:', err);
-          setError('Failed to set main photo');
+          setError(t('gallery.album.setMainFailed'));
         }
       };
 
@@ -177,7 +179,7 @@ export default function Album({ isAdmin }) {
           }
         } catch (err) {
           console.error('Error updating gallery:', err);
-          setError('Failed to update gallery status');
+          setError(t('gallery.album.updateStatusFailed'));
         }
       };
 
@@ -198,7 +200,7 @@ export default function Album({ isAdmin }) {
               <Divider />
               <h2 className="gallery-title">Gallery</h2>
               <Divider />
-              <div className="loading">Loading gallery...</div>
+              <div className="loading">{t('gallery.album.loadingGallery')}</div>
             </div>
           </section>
         );
@@ -209,9 +211,9 @@ export default function Album({ isAdmin }) {
           <section className="gallery-container">
             <div className="gallery-inner">
               <Divider />
-              <h2 className="gallery-title">Gallery</h2>
+              <h2 className="gallery-title">{t('gallery.title')}</h2>
               <Divider />
-              <div className="error-message">Gallery not found</div>
+              <div className="error-message">{t('gallery.album.galleryNotFound')}</div>
             </div>
           </section>
         );
@@ -222,9 +224,9 @@ export default function Album({ isAdmin }) {
           <section className="gallery-container">
             <div className="gallery-inner">
               <Divider />
-              <h2 className="gallery-title">Gallery</h2>
+              <h2 className="gallery-title">{t('gallery.title')}</h2>
               <Divider />
-              <div className="loading">Loading photos...</div>
+              <div className="loading">{t('gallery.album.loadingPhotos')}</div>
             </div>
           </section>
         );
@@ -264,100 +266,121 @@ export default function Album({ isAdmin }) {
     }
 
     return (
-        <section className="gallery-container">
-        <div className="gallery-inner">
-            <Divider />
-            <div className="gallery-header">
-            <button className="back-button" onClick={() => navigate('/gallery')}>
-                ← Back to Galleries
-            </button>
-            <h2 className="gallery-title">{selectedGallery?.title || 'Gallery'}</h2>
-            {isAdmin && (
-                <div className="gallery-admin-actions">
-                <label className="gallery-published-toggle">
-                    <input
-                    type="checkbox"
-                    checked={selectedGallery.published || false}
-                    onChange={(e) => handleToggleGalleryPublished(e.target.checked)}
-                    />
-                    Published
-                </label>
-                <button 
-                    className="delete-gallery-button" 
-                    onClick={() => handleDeleteGallery(selectedGallery.id)}
-                    title="Delete Gallery"
-                >
-                    🗑️ Delete
-                </button>
+        <main className={`page-content simple-background`}>
+            <section className="gallery-container">
+                <div className="gallery-inner">
+                    <h2 className="gallery-title">{selectedGallery?.title || 'Gallery'}</h2>
+
+               
+                {selectedGallery.description && (
+                <p className="gallery-description">{selectedGallery.description}</p>
+                )}
+
+                {loadingPhotos ? (
+                <div className="loading">{t('gallery.album.loadingPhotos')}</div>
+                ) : photos.length === 0 ? (
+                <div className="no-photos">{t('gallery.album.noPhotos')}</div>
+                ) : (
+                <div className="galleries-grid" role="list">
+                    {photos.map((photo) => {
+                    const imageUrl = getPhotoUrl(photo);
+                    if (!imageUrl) return null;
+
+                    return (
+                        <div 
+                            className="gallery-item" 
+                            role="listitem" 
+                            key={photo.id}
+                            onClick={() => handlePhotoClick(photo)}
+                        >
+                        {isAdmin && (
+                            <div className="photo-admin-actions" onClick={(e) => e.stopPropagation()}>
+                            <button
+                                className="photo-action-btn photo-main-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleSetMainPhoto(photo, e);
+                                }}
+                                title={t('gallery.album.setAsMain')}
+                            >
+                                ⭒
+                            </button>
+                            <button
+                                className="photo-action-btn photo-delete-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeletePhoto(photo.id, e);
+                                }}
+                                title={t('gallery.album.deletePhoto')}
+                            >
+                                ×
+                            </button>
+                            </div>
+                        )}
+                        <img 
+                            src={imageUrl} 
+                            alt={photo.altText || photo.caption || 'Photo'} 
+                            loading="lazy"
+                            style={{ cursor: 'pointer' }}
+                        />
+                        <div className="gallery-overlay">
+                            <span className="gallery-zoom">
+                            {photo.caption || 'Photo'}
+                            </span>
+                        </div>
+                    </div>
+                    );
+                    })}
                 </div>
-            )}
-            </div>
-            {selectedGallery.description && (
-            <p className="gallery-description">{selectedGallery.description}</p>
-            )}
-            <Divider />
+                )}
+
+
+        
+                <div className="gallery-back">
+                    <button 
+                        className="back-button" 
+                        type="button"
+                        onClick={() => {
+                            navigate('/gallery');
+                        }}
+                    >
+                        ← {t('gallery.album.backToGalleries')}
+                    </button>
+                </div>
 
             {isAdmin && selectedGallery && (
-            <div className="gallery-upload-section">
-                <ImageUploader
-                galleryId={selectedGallery.id}
-                onUploadSuccess={handlePhotoUploadSuccess}
-                maxSizeMB={3}
-                />
-            </div>
-            )}
-
-            {loadingPhotos ? (
-            <div className="loading">Loading photos...</div>
-            ) : photos.length === 0 ? (
-            <div className="no-photos">No photos available yet.</div>
-            ) : (
-            <div className="gallery-grid" role="list">
-                {photos.map((photo) => {
-                const imageUrl = getPhotoUrl(photo);
-                if (!imageUrl) return null;
-
-                return (
-                    <div className="gallery-item" role="listitem" key={photo.id}>
-                    {isAdmin && (
-                        <div className="photo-admin-actions">
-                        <button
-                            className="photo-action-btn photo-main-btn"
-                            onClick={(e) => handleSetMainPhoto(photo, e)}
-                            title="Set as main"
+                <div className="gallery-upload-section">
+                    <div className="gallery-admin-actions">
+                        <label className="gallery-published-toggle">
+                            <input
+                            type="checkbox"
+                            checked={selectedGallery.published || false}
+                            onChange={(e) => handleToggleGalleryPublished(e.target.checked)}
+                            />
+                            {t('gallery.album.published')}
+                        </label>
+                        <button 
+                            className="delete-gallery-button" 
+                            onClick={() => handleDeleteGallery(selectedGallery.id)}
+                            title={t('gallery.album.deleteGallery')}
                         >
-                            ⭐
+                            🗑️ {t('gallery.album.deleteGallery')}
                         </button>
-                        <button
-                            className="photo-action-btn photo-delete-btn"
-                            onClick={(e) => handleDeletePhoto(photo.id, e)}
-                            title="Delete photo"
-                        >
-                            ×
-                        </button>
-                        </div>
-                    )}
-                    <img 
-                        src={imageUrl} 
-                        alt={photo.altText || photo.caption || 'Photo'} 
-                        loading="lazy"
-                        onClick={() => handlePhotoClick(photo)}
-                        style={{ cursor: 'pointer' }}
+                    </div>
+            
+                    <ImageUploader
+                    galleryId={selectedGallery.id}
+                    onUploadSuccess={handlePhotoUploadSuccess}
+                    maxSizeMB={3}
                     />
-                    <div className="gallery-overlay">
-                        <span className="gallery-zoom">
-                        {photo.caption || 'Photo'}
-                        </span>
-                    </div>
-                    </div>
-                );
-                })}
-            </div>
+                </div>
+                )}
+
+            {selectedPhoto && (
+                <PhotoModal photo={selectedPhoto} onClose={handleCloseModal} />
             )}
-        </div>
-        {selectedPhoto && (
-            <PhotoModal photo={selectedPhoto} onClose={handleCloseModal} />
-        )}
-        </section>
+            </div>
+            </section>
+        </main>
     );
 }

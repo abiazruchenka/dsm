@@ -12,7 +12,45 @@
   },
   "events": {
     "title": "Événements",
-    "description": "Événements de reconstitution à venir et démonstrations historiques"
+    "description": "Événements de reconstitution à venir et démonstrations historiques",
+    "totalEvents": "Total des événements",
+    "loading": "Chargement des événements...",
+    "noEvents": "Aucun événement disponible pour le moment.",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "page": "Page",
+    "of": "de",
+    "loadFailed": "Échec du chargement des événements",
+    "create": {
+      "title": "Créer un nouvel événement",
+      "eventTitle": "Titre de l'événement",
+      "eventTitlePlaceholder": "Titre de l'événement",
+      "eventDescription": "Description de l'événement",
+      "eventDescriptionPlaceholder": "Description de l'événement",
+      "eventImage": "Image de l'événement",
+      "eventLink": "Lien de l'événement",
+      "eventLinkPlaceholder": "Lien de l'événement (optionnel)",
+      "eventDate": "Date de l'événement",
+      "titleRequired": "Le titre de l'événement est requis",
+      "descriptionRequired": "La description de l'événement est requise",
+      "creating": "Création en cours...",
+      "create": "Créer l'événement",
+      "success": "Événement créé avec succès !",
+      "failed": "Échec de la création de l'événement",
+      "remove": "Supprimer"
+    },
+    "edit": {
+      "title": "Modifier l'événement",
+      "save": "Enregistrer les modifications",
+      "saving": "Enregistrement...",
+      "delete": "Supprimer l'événement",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet événement ? Cette action est irréversible.",
+      "backToEvents": "Retour aux événements",
+      "viewGallery": "Voir la galerie",
+      "currentImage": "Image actuelle :",
+      "failed": "Échec de la mise à jour de l'événement",
+      "deleteFailed": "Échec de la suppression de l'événement"
+    }
   },
   "gallery": {
     "title": "Galerie",
@@ -44,6 +82,31 @@
       "success": "Galerie créée avec succès !",
       "failed": "Échec de la création de la galerie. Veuillez réessayer.",
       "created": "Galerie créée ! Vous pouvez maintenant télécharger des photos."
+    },
+    "album": {
+      "loadingGallery": "Chargement de la galerie...",
+      "loadingPhotos": "Chargement des photos...",
+      "noPhotos": "Aucune photo disponible pour le moment.",
+      "galleryNotFound": "Galerie introuvable",
+      "loadFailed": "Échec du chargement de la galerie",
+      "deleteFailed": "Échec de la suppression de la galerie",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette galerie ? Cette action est irréversible.",
+      "photoDeleteFailed": "Échec de la suppression de la photo",
+      "photoDeleteConfirm": "Êtes-vous sûr de vouloir supprimer cette photo ?",
+      "setMainFailed": "Échec de la définition de la photo principale",
+      "updateStatusFailed": "Échec de la mise à jour du statut de la galerie",
+      "setAsMain": "Définir comme principale",
+      "deletePhoto": "Supprimer la photo",
+      "backToGalleries": "Retour aux galeries",
+      "published": "Publié",
+      "remove": "Supprimer",
+      "preview": "Aperçu",
+      "deleteGallery": "Supprimer la galerie"
+    },
+    "list": {
+      "loading": "Chargement des galeries...",
+      "loadFailed": "Échec du chargement des galeries",
+      "noGalleries": "Aucune galerie disponible pour le moment."
     }
   },
   "reenactment": {

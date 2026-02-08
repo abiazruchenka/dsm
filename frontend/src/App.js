@@ -10,13 +10,12 @@ import Album from './components/Gallery/Album';
 import Contact from './components/Contact/Contact';
 import ContactMessages from './components/Contact/ContactMessages';
 import Reenactment from './components/Reenactment/Reenactment';
-import { Routes, Route, useLocation, Navigate  } from 'react-router-dom';
+import EventDetail from './components/Events/EventDetail';
+import { Routes, Route, Navigate  } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 
 export default function App() {
   const { isAdmin, isAuthenticated } = useAuth();
-  const location = useLocation();
-  const isHome = location.pathname === '/';
 
   const ProtectedRoute = ({ children }) => {
     return isAuthenticated ? children : <Navigate to="/login" />;
@@ -30,12 +29,11 @@ export default function App() {
   return (
       <div className="App">
         <Header />
-        <main className={`page-content ${isHome ? 'home-background' : 'page-background'}`}>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/"  element={<Home />} />
             <Route path="/startpage" element={<Startpage />} />
-            <Route path="/events" element={<Events />} />
+            <Route path="/events" element={<Events isAdmin={isAdmin}/>} />
             <Route path="/gallery" element={<Gallery isAdmin={isAdmin} />} /> 
             <Route path="/reenactment" element={<Reenactment />} />
             <Route 
@@ -55,13 +53,12 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-            <Route path="/gallery/:galleryId" element={<Album isAdmin={isAdmin} />} />
-
+            <Route path="/gallery/:galleryId" element={<Album isAdmin={isAdmin} />} />            
+            <Route path="/events/:eventId" element={<EventDetail isAdmin={isAdmin} />} />
             {/* 
             <Route path="/statute" element={<Statute />} />
             <Route path="/about" element={<About />} /> */}
           </Routes>
-        </main>
       </div>   
   );
 };

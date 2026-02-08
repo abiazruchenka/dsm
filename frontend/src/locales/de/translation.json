@@ -12,7 +12,45 @@
     },
     "events": {
         "title": "Veranstaltungen",
-        "description": "Kommende Veranstaltungen und historische Demonstrationen"
+        "description": "Kommende Veranstaltungen und historische Demonstrationen",
+        "totalEvents": "Gesamte Veranstaltungen",
+        "loading": "Veranstaltungen werden geladen...",
+        "noEvents": "Noch keine Veranstaltungen verfügbar.",
+        "previous": "Vorherige",
+        "next": "Nächste",
+        "page": "Seite",
+        "of": "von",
+        "loadFailed": "Veranstaltungen laden fehlgeschlagen",
+        "create": {
+            "title": "Neue Veranstaltung erstellen",
+            "eventTitle": "Veranstaltungstitel",
+            "eventTitlePlaceholder": "Veranstaltungstitel",
+            "eventDescription": "Veranstaltungsbeschreibung",
+            "eventDescriptionPlaceholder": "Veranstaltungsbeschreibung",
+            "eventImage": "Veranstaltungsbild",
+            "eventLink": "Veranstaltungslink",
+            "eventLinkPlaceholder": "Veranstaltungslink (optional)",
+            "eventDate": "Veranstaltungsdatum",
+            "titleRequired": "Veranstaltungstitel ist erforderlich",
+            "descriptionRequired": "Veranstaltungsbeschreibung ist erforderlich",
+            "creating": "Wird erstellt...",
+            "create": "Veranstaltung erstellen",
+            "success": "Veranstaltung erfolgreich erstellt!",
+            "failed": "Veranstaltung konnte nicht erstellt werden",
+            "remove": "Entfernen"
+        },
+        "edit": {
+            "title": "Veranstaltung bearbeiten",
+            "save": "Änderungen speichern",
+            "saving": "Wird gespeichert...",
+            "delete": "Veranstaltung löschen",
+            "deleteConfirm": "Sind Sie sicher, dass Sie diese Veranstaltung löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+            "backToEvents": "Zurück zu Veranstaltungen",
+            "viewGallery": "Galerie ansehen",
+            "currentImage": "Aktuelles Bild:",
+            "failed": "Veranstaltung aktualisieren fehlgeschlagen",
+            "deleteFailed": "Veranstaltung löschen fehlgeschlagen"
+        }
     },
     "gallery": {
         "title": "Galerie",
@@ -44,6 +82,31 @@
             "success": "Galerie erfolgreich erstellt!",
             "failed": "Galerie konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
             "created": "Galerie erstellt! Sie können jetzt Fotos hochladen."
+        },
+        "album": {
+            "loadingGallery": "Galerie wird geladen...",
+            "loadingPhotos": "Fotos werden geladen...",
+            "noPhotos": "Noch keine Fotos verfügbar.",
+            "galleryNotFound": "Galerie nicht gefunden",
+            "loadFailed": "Galerie laden fehlgeschlagen",
+            "deleteFailed": "Galerie löschen fehlgeschlagen",
+            "deleteConfirm": "Sind Sie sicher, dass Sie diese Galerie löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+            "photoDeleteFailed": "Foto löschen fehlgeschlagen",
+            "photoDeleteConfirm": "Sind Sie sicher, dass Sie dieses Foto löschen möchten?",
+            "setMainFailed": "Hauptfoto setzen fehlgeschlagen",
+            "updateStatusFailed": "Galeriestatus aktualisieren fehlgeschlagen",
+            "setAsMain": "Als Hauptbild setzen",
+            "deletePhoto": "Foto löschen",
+            "backToGalleries": "Zurück zu Galerien",
+            "published": "Veröffentlicht",
+            "remove": "Entfernen",
+            "preview": "Vorschau",
+            "deleteGallery": "Galerie löschen"
+        },
+        "list": {
+            "loading": "Galerien werden geladen...",
+            "loadFailed": "Galerien laden fehlgeschlagen",
+            "noGalleries": "Noch keine Galerien verfügbar."
         }
     },
     "reenactment": {

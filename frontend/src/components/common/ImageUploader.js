@@ -12,8 +12,8 @@ const ImageUploader = ({
   uploadEndpoint = '/api/photos/upload'
 }) => {
   const { t } = useTranslation();
-  const [file, setFile] = useState(null);
-  const [preview, setPreview] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -21,33 +21,41 @@ const ImageUploader = ({
   const [altText, setAltText] = useState('');
 
   const onFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (!selectedFile) return;
+    const selectedFiles = Array.from(e.target.files || []);
+    if (selectedFiles.length === 0) return;
 
-    if (selectedFile.size > maxSizeMB * 1024 * 1024) {
-      setError(t('gallery.upload.fileTooLarge'));
-      setFile(null);
-      setPreview(null);
-      return;
+    const validFiles = [];
+    const newPreviews = [];
+
+    for (const file of selectedFiles) {
+      if (file.size > maxSizeMB * 1024 * 1024) {
+        setError(`${file.name}: ${t('gallery.upload.fileTooLarge')}`);
+        continue;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        setError(`${file.name}: ${t('gallery.upload.invalidFileType')}`);
+        continue;
+      }
+
+      validFiles.push(file);
+      newPreviews.push({
+        file,
+        url: URL.createObjectURL(file),
+        name: file.name
+      });
     }
 
-    if (!selectedFile.type.startsWith('image/')) {
-      setError(t('gallery.upload.invalidFileType'));
-      setFile(null);
-      setPreview(null);
-      return;
+    if (validFiles.length > 0) {
+      setFiles(prev => [...prev, ...validFiles]);
+      setPreviews(prev => [...prev, ...newPreviews]);
+      setError(null);
+      setSuccess(false);
     }
-
-    setFile(selectedFile);
-    setError(null);
-    setSuccess(false);
-
-    const previewUrl = URL.createObjectURL(selectedFile);
-    setPreview(previewUrl);
   };
 
   const uploadImage = async () => {
-    if (!file) return;
+    if (files.length === 0) return;
 
     setLoading(true);
     setError(null);
@@ -60,26 +68,22 @@ const ImageUploader = ({
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
-    if (caption) formData.append('caption', caption);
-    if (altText) formData.append('altText', altText);
-    if (galleryId) formData.append('galleryId', galleryId);
-
     try {
-      const currentToken = localStorage.getItem('token');
-      if (!currentToken) {
-        setError('You must be logged in to upload photos');
-        setLoading(false);
-        return;
-      }
-      
-      console.log('Uploading photo with token:', currentToken.substring(0, 20) + '...');
-      const response = await api.post(uploadEndpoint, formData);
+      const uploadPromises = files.map(file => {
+        const formData = new FormData();
+        formData.append('file', file);
+        if (caption) formData.append('caption', caption);
+        if (altText) formData.append('altText', altText);
+        if (galleryId) formData.append('galleryId', galleryId);
+        
+        return api.post(uploadEndpoint, formData);
+      });
 
+      const responses = await Promise.all(uploadPromises);
+      
       setSuccess(true);
-      setFile(null);
-      setPreview(null);
+      setFiles([]);
+      setPreviews([]);
       setCaption('');
       setAltText('');
 
@@ -87,7 +91,11 @@ const ImageUploader = ({
       if (fileInput) fileInput.value = '';
 
       if (onUploadSuccess) {
-        onUploadSuccess(response.data);
+        responses.forEach(response => {
+          if (onUploadSuccess) {
+            onUploadSuccess(response.data);
+          }
+        });
       }
 
       setTimeout(() => {
@@ -104,84 +112,121 @@ const ImageUploader = ({
     }
   };
 
-  const clearPreview = () => {
-    if (preview) {
-      URL.revokeObjectURL(preview);
+  const removeFile = (index) => {
+    const previewToRemove = previews[index];
+    if (previewToRemove && previewToRemove.url) {
+      URL.revokeObjectURL(previewToRemove.url);
     }
-    setPreview(null);
-    setFile(null);
+    
+    setFiles(prev => prev.filter((_, i) => i !== index));
+    setPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const clearAll = () => {
+    previews.forEach(preview => {
+      if (preview.url) {
+        URL.revokeObjectURL(preview.url);
+      }
+    });
+    setFiles([]);
+    setPreviews([]);
     setError(null);
   };
 
   return (
     <div className="image-uploader">
-      <div className="form-group">
-        <label htmlFor="file-input">{t('gallery.upload.selectFile')}</label>
-        <input
-          id="file-input"
-          type="file"
-          onChange={onFileChange}
-          accept="image/*"
-          disabled={loading}
-        />
-      </div>
+      <div className="image-uploader-body">
+        <h3>{t('gallery.upload.title')}</h3>
 
-      {preview && (
-        <div className="upload-preview">
-          <img src={preview} alt="Preview" />
+        {error && (
+          <div className="upload-error">{error}</div>
+        )}
+
+        {success && (
+          <div className="upload-success">{t('gallery.upload.success')}</div>
+        )}
+
+        <div className="form-group">
+          <label htmlFor="file-input" className="visually-hidden">{t('gallery.upload.selectFile')}</label>
+          <input
+            id="file-input"
+            type="file"
+            onChange={onFileChange}
+            accept="image/*"
+            multiple
+            disabled={loading}
+            aria-label={t('gallery.upload.selectFile')}
+          />
+        </div>
+
+        {previews.length > 0 && (
+          <div className="upload-previews">
+            {previews.map((preview, index) => (
+              <div key={index} className="upload-preview">
+                <img src={preview.url} alt={preview.name || 'Preview'} />
+                <button
+                  onClick={() => removeFile(index)}
+                  className="remove-preview-btn"
+                  type="button"
+                  title="Remove"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            {previews.length > 0 && (
+              <button
+                onClick={clearAll}
+                className="clear-all-btn"
+                type="button"
+                style={{ marginTop: '10px', padding: '4px 8px', height: '30px' }}
+              >
+                Clear All
+              </button>
+            )}
+          </div>
+        )}
+
+        {showCaption && (
+          <div className="form-group">
+            <label htmlFor="caption-input" className="visually-hidden">{t('gallery.upload.caption')}</label>
+            <input
+              id="caption-input"
+              type="text"
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+              placeholder={t('gallery.upload.captionPlaceholder')}
+              disabled={loading}
+              aria-label={t('gallery.upload.caption')}
+            />
+          </div>
+        )}
+
+        {showAltText && (
+          <div className="form-group">
+            <label htmlFor="alt-text-input" className="visually-hidden">{t('gallery.upload.altText')}</label>
+            <input
+              id="alt-text-input"
+              type="text"
+              value={altText}
+              onChange={(e) => setAltText(e.target.value)}
+              placeholder={t('gallery.upload.altTextPlaceholder')}
+              disabled={loading}
+              aria-label={t('gallery.upload.altText')}
+            />
+          </div>
+        )}
+
+        <div className="form-actions">
           <button
-            onClick={clearPreview}
-            className="remove-preview-btn"
-            type="button"
+            onClick={uploadImage}
+            disabled={files.length === 0 || loading}
+            className="upload-button"
           >
-            ×
+            {loading ? t('gallery.upload.uploading') : `${t('gallery.upload.upload')} ${files.length > 0 ? `(${files.length})` : ''}`}
           </button>
         </div>
-      )}
-
-      {showCaption && (
-        <div className="form-group">
-          <label htmlFor="caption-input">{t('gallery.upload.caption')}</label>
-          <input
-            id="caption-input"
-            type="text"
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            placeholder={t('gallery.upload.captionPlaceholder')}
-            disabled={loading}
-          />
-        </div>
-      )}
-
-      {showAltText && (
-        <div className="form-group">
-          <label htmlFor="alt-text-input">{t('gallery.upload.altText')}</label>
-          <input
-            id="alt-text-input"
-            type="text"
-            value={altText}
-            onChange={(e) => setAltText(e.target.value)}
-            placeholder={t('gallery.upload.altTextPlaceholder')}
-            disabled={loading}
-          />
-        </div>
-      )}
-
-      {error && (
-        <div className="upload-error">{error}</div>
-      )}
-
-      {success && (
-        <div className="upload-success">{t('gallery.upload.success')}</div>
-      )}
-
-      <button
-        onClick={uploadImage}
-        disabled={!file || loading}
-        className="upload-button"
-      >
-        {loading ? t('gallery.upload.uploading') : t('gallery.upload.upload')}
-      </button>
+      </div>
     </div>
   );
 };
