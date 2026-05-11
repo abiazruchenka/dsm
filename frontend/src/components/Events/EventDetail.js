@@ -2,21 +2,29 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../../config/axios';
+import { getLocalized } from '../../utils/i18n';
+import '../common/PublishedToggle.css';
 import './EventDetail.css';
 
 export default function EventDetail({ isAdmin }) {
   const { eventId } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = ['de', 'en', 'fr'].includes(i18n.language) ? i18n.language : 'en';
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  const [title, setTitle] = useState('');
-  const [text, setText] = useState('');
+  const [titleDe, setTitleDe] = useState('');
+  const [titleEn, setTitleEn] = useState('');
+  const [titleFr, setTitleFr] = useState('');
+  const [textDe, setTextDe] = useState('');
+  const [textEn, setTextEn] = useState('');
+  const [textFr, setTextFr] = useState('');
   const [date, setDate] = useState('');
   const [link, setLink] = useState('');
+  const [published, setPublished] = useState(true);
   const [eventFile, setEventFile] = useState(null);
   const [eventFilePreview, setEventFilePreview] = useState(null);
 
@@ -33,10 +41,15 @@ export default function EventDetail({ isAdmin }) {
       const response = await api.get(`/api/events/${eventId}`);
       const eventData = response.data;
       setEvent(eventData);
-      setTitle(eventData.title || '');
-      setText(eventData.text || '');
+      setTitleDe(eventData?.titles?.de || '');
+      setTitleEn(eventData?.titles?.en || '');
+      setTitleFr(eventData?.titles?.fr || '');
+      setTextDe(eventData?.texts?.de || '');
+      setTextEn(eventData?.texts?.en || '');
+      setTextFr(eventData?.texts?.fr || '');
       setDate(eventData.date ? eventData.date.split('T')[0] : '');
       setLink(eventData.link || '');
+      setPublished(eventData.published !== false);
     } catch (err) {
       console.error('Error loading event:', err);
       setError('Failed to load event');
@@ -53,8 +66,12 @@ export default function EventDetail({ isAdmin }) {
 
     try {
       const formData = new FormData();
-      formData.append('title', title);
-      formData.append('text', text);
+      formData.append('title_de', titleDe);
+      formData.append('title_en', titleEn);
+      formData.append('title_fr', titleFr);
+      formData.append('text_de', textDe);
+      formData.append('text_en', textEn);
+      formData.append('text_fr', textFr);
       if (eventFile) {
         formData.append('file', eventFile);
       }
@@ -68,6 +85,7 @@ export default function EventDetail({ isAdmin }) {
       } else {
         formData.append('date', '');
       }
+      formData.append('is_published', published);
 
       await api.patch(`/api/events/${eventId}`, formData);
 
@@ -114,7 +132,7 @@ export default function EventDetail({ isAdmin }) {
 
   if (loading) {
     return (
-      <main className={`page-content simple-background`}>
+      <main className={`page-content`}>
         <section className="event-detail-container">
           <div className="event-detail-inner">
             <div className="loading">Loading event...</div>
@@ -126,7 +144,7 @@ export default function EventDetail({ isAdmin }) {
 
   if (error && !event) {
     return (
-      <main className={`page-content simple-background`}>
+      <main className={`page-content`}>
         <section className="event-detail-container">
           <div className="event-detail-inner">
             <div className="error-message">{error}</div>
@@ -141,10 +159,10 @@ export default function EventDetail({ isAdmin }) {
   }
 
   return (
-    <main className={`page-content simple-background`}>
+    <main className={`page-content`}>
     <section className="event-detail-container">
         <div className="event-detail-inner">
-            <h2 className="event-detail-title">{event.title}</h2>
+            <h2 className="event-detail-title">{getLocalized(event?.titles, lang)}</h2>
 
        
         {event.date && (
@@ -154,12 +172,12 @@ export default function EventDetail({ isAdmin }) {
         <div className="event-detail-content">
           {event.image && (
             <div className="event-detail-image">
-              <img src={event.image} alt={event.title || 'Event'} />
+              <img src={event.image} alt={getLocalized(event?.titles, lang) || 'Event'} />
             </div>
           )}
           <div className="event-detail-text-wrapper">
-            {event.text && (
-              <div className="event-detail-text">{event.text}</div>
+            {(getLocalized(event?.texts, lang)) && (
+              <div className="event-detail-text">{getLocalized(event?.texts, lang)}</div>
             )}
             {event.link && (
               <div className="event-detail-link">
@@ -191,27 +209,22 @@ export default function EventDetail({ isAdmin }) {
               )}
 
               <div className="form-group">
-                <label htmlFor="event-title-input" className="visually-hidden">{t('events.create.eventTitle')}</label>
-                <input
-                  id="event-title-input"
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder={t('events.create.eventTitlePlaceholder')}
-                  aria-label={t('events.create.eventTitle')}
-                />
+                <input type="text" value={titleDe} onChange={(e) => setTitleDe(e.target.value)} placeholder="Title (DE)" />
               </div>
-
               <div className="form-group">
-                <label htmlFor="event-text-input" className="visually-hidden">{t('events.create.eventDescription')}</label>
-                <textarea
-                  id="event-text-input"
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder={t('events.create.eventDescriptionPlaceholder')}
-                  rows={6}
-                  aria-label={t('events.create.eventDescription')}
-                />
+                <input type="text" value={titleEn} onChange={(e) => setTitleEn(e.target.value)} placeholder="Title (EN)" />
+              </div>
+              <div className="form-group">
+                <input type="text" value={titleFr} onChange={(e) => setTitleFr(e.target.value)} placeholder="Title (FR)" />
+              </div>
+              <div className="form-group">
+                <textarea value={textDe} onChange={(e) => setTextDe(e.target.value)} placeholder="Text (DE)" rows={4} />
+              </div>
+              <div className="form-group">
+                <textarea value={textEn} onChange={(e) => setTextEn(e.target.value)} placeholder="Text (EN)" rows={4} />
+              </div>
+              <div className="form-group">
+                <textarea value={textFr} onChange={(e) => setTextFr(e.target.value)} placeholder="Text (FR)" rows={4} />
               </div>
 
               <div className="form-group">
@@ -295,10 +308,21 @@ export default function EventDetail({ isAdmin }) {
                 />
               </div>
 
+              <div className="form-group">
+                <label className="published-toggle">
+                  <input
+                    type="checkbox"
+                    checked={published}
+                    onChange={(e) => setPublished(e.target.checked)}
+                  />
+                  {t('events.create.published')}
+                </label>
+              </div>
+
               <div className="event-admin-actions">
                 <button
                   onClick={handleSave}
-                  disabled={saving || !title.trim()}
+                  disabled={saving || !titleDe.trim()}
                   className="save-button"
                 >
                   {saving ? t('events.edit.saving') : t('events.edit.save')}

@@ -70,7 +70,7 @@ export default function ContactMessages() {
   };
 
   return (
-    <main className={`page-content page-background`}>
+    <main className="page-content">
       <section className="contact-messages-container">
         <div className="contact-messages-inner">
         <h2 className="contact-messages-title">{t('contactMessages.title')}</h2>

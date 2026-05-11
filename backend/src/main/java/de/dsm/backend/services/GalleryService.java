@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -20,7 +22,18 @@ public class GalleryService {
     private final PhotoService photoService;
 
     public GalleryResponse createGallery(GalleryRequest galleryRequest) {
-        var gallery = new Gallery(galleryRequest.title(), null, galleryRequest.description(), galleryRequest.is_published());
+        var gallery = new Gallery();
+        Map<String, String> titles = galleryRequest.titles() != null ? galleryRequest.titles() : Map.of();
+        Map<String, String> descs = galleryRequest.descriptions() != null ? galleryRequest.descriptions() : Map.of();
+        String titleDe = titles.getOrDefault("de", "");
+        gallery.setTitle(titleDe);
+        gallery.setTitleFr(titles.getOrDefault("fr", titleDe));
+        gallery.setTitleEn(titles.getOrDefault("en", titleDe));
+        String descDe = descs.getOrDefault("de", "");
+        gallery.setDescription(descDe);
+        gallery.setDescriptionFr(descs.getOrDefault("fr", descDe));
+        gallery.setDescriptionEn(descs.getOrDefault("en", descDe));
+        gallery.setPublished(galleryRequest.is_published());
         galleryRepository.save(gallery);
         return mapToResponse(gallery);
     }
@@ -30,11 +43,15 @@ public class GalleryService {
 
         gallery.setPublished(galleryRequest.is_published());
 
-        if (galleryRequest.title() != null) {
-            gallery.setTitle(galleryRequest.title());
+        if (galleryRequest.titles() != null && !galleryRequest.titles().isEmpty()) {
+            if (galleryRequest.titles().containsKey("de")) gallery.setTitle(galleryRequest.titles().get("de"));
+            if (galleryRequest.titles().containsKey("fr")) gallery.setTitleFr(galleryRequest.titles().get("fr"));
+            if (galleryRequest.titles().containsKey("en")) gallery.setTitleEn(galleryRequest.titles().get("en"));
         }
-        if (galleryRequest.description() != null) {
-            gallery.setDescription(galleryRequest.description());
+        if (galleryRequest.descriptions() != null && !galleryRequest.descriptions().isEmpty()) {
+            if (galleryRequest.descriptions().containsKey("de")) gallery.setDescription(galleryRequest.descriptions().get("de"));
+            if (galleryRequest.descriptions().containsKey("fr")) gallery.setDescriptionFr(galleryRequest.descriptions().get("fr"));
+            if (galleryRequest.descriptions().containsKey("en")) gallery.setDescriptionEn(galleryRequest.descriptions().get("en"));
         }
 
         if (galleryRequest.image() != null) {
@@ -69,10 +86,18 @@ public class GalleryService {
     }
 
     private GalleryResponse mapToResponse(Gallery gallery) {
+        Map<String, String> titles = new HashMap<>();
+        if (gallery.getTitle() != null) titles.put("de", gallery.getTitle());
+        if (gallery.getTitleFr() != null) titles.put("fr", gallery.getTitleFr());
+        if (gallery.getTitleEn() != null) titles.put("en", gallery.getTitleEn());
+        Map<String, String> descriptions = new HashMap<>();
+        if (gallery.getDescription() != null) descriptions.put("de", gallery.getDescription());
+        if (gallery.getDescriptionFr() != null) descriptions.put("fr", gallery.getDescriptionFr());
+        if (gallery.getDescriptionEn() != null) descriptions.put("en", gallery.getDescriptionEn());
         return new GalleryResponse(
                 gallery.getId(),
-                gallery.getTitle(),
-                gallery.getDescription(),
+                titles,
+                descriptions,
                 s3UrlService.getPublicUrl(gallery.getImage()),
                 gallery.getPublished(),
                 gallery.getCreatedAt()

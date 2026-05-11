@@ -5,11 +5,18 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReenactmentManagement from './ReenactmentManagement';
 import { reenactmentService } from '../../services/reenactmentService';
+import { getLocalized } from '../../utils/i18n';
+import { useLocale } from '../../hooks/useLocale';
+import { usePhotoNavigation } from '../../hooks/usePhotoNavigation';
+import { getOriginalPhotoUrl } from '../../utils/photoUtils';
+import PhotoModal from '../common/PhotoModal';
+import PhotoGrid from '../common/PhotoGrid';
+import GalleryCard from '../common/GalleryCard';
 
 export default function Reenactment({ isAdmin }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { blockId } = useParams();
-  const lang = ['de', 'en', 'fr'].includes(i18n.language) ? i18n.language : 'en';
+  const lang = useLocale();
   const navigate = useNavigate();
   const [groupedData, setGroupedData] = useState([]);
   const [blockDetail, setBlockDetail] = useState(null);
@@ -29,24 +36,8 @@ export default function Reenactment({ isAdmin }) {
     }
   }, [blockId]);
 
-  useEffect(() => {
-    if (selectedPhotoIndex == null) return;
-    const onKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        setSelectedPhotoIndex(null);
-      } else if (e.key === 'ArrowLeft') {
-        const photos = blockDetail?.photos?.filter(p => getOriginalPhotoUrl(p)) || [];
-        if (selectedPhotoIndex > 0) setSelectedPhotoIndex(selectedPhotoIndex - 1);
-        e.preventDefault();
-      } else if (e.key === 'ArrowRight') {
-        const photos = blockDetail?.photos?.filter(p => getOriginalPhotoUrl(p)) || [];
-        if (selectedPhotoIndex < photos.length - 1) setSelectedPhotoIndex(selectedPhotoIndex + 1);
-        e.preventDefault();
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [selectedPhotoIndex, blockDetail]);
+  const photos = blockDetail?.photos || [];
+  usePhotoNavigation(selectedPhotoIndex, photos, () => setSelectedPhotoIndex(null), setSelectedPhotoIndex, (p) => p.filter(getOriginalPhotoUrl));
 
   const fetchBlocks = async () => {
     try {
@@ -81,16 +72,6 @@ export default function Reenactment({ isAdmin }) {
     return category?.names?.[lang] || category?.names?.en || category?.code || '';
   };
 
-  const getPhotoUrl = (photo) => {
-    if (!photo?.versions) return null;
-    return photo.versions.thumbnail || photo.versions.original || null;
-  };
-
-  const getOriginalPhotoUrl = (photo) => {
-    if (!photo?.versions) return null;
-    return photo.versions.original || photo.versions.thumbnail || null;
-  };
-
   const handlePhotoClick = (photo) => {
     const photos = blockDetail?.photos?.filter(p => getOriginalPhotoUrl(p)) || [];
     const index = photos.findIndex(p => p.id === photo.id);
@@ -99,15 +80,14 @@ export default function Reenactment({ isAdmin }) {
 
   const handleCloseModal = () => setSelectedPhotoIndex(null);
 
+  const validPhotos = (blockDetail?.photos || []).filter(getOriginalPhotoUrl);
   const handlePrevPhoto = (e) => {
     e.stopPropagation();
     if (selectedPhotoIndex > 0) setSelectedPhotoIndex(selectedPhotoIndex - 1);
   };
-
   const handleNextPhoto = (e) => {
     e.stopPropagation();
-    const photos = blockDetail?.photos?.filter(p => getOriginalPhotoUrl(p)) || [];
-    if (selectedPhotoIndex < photos.length - 1) setSelectedPhotoIndex(selectedPhotoIndex + 1);
+    if (selectedPhotoIndex < validPhotos.length - 1) setSelectedPhotoIndex(selectedPhotoIndex + 1);
   };
 
   const handleBlockClick = (id) => {
@@ -144,7 +124,7 @@ export default function Reenactment({ isAdmin }) {
 
   if (loading && !blockDetail) {
     return (
-      <main className="page-content simple-background">
+      <main className="page-content">
         <section className="reenactment-page">
           <div className="reenactment-inner">
             <h2 className="reenactment-title">{t('reenactment.title') || 'Reenactment'}</h2>
@@ -157,7 +137,7 @@ export default function Reenactment({ isAdmin }) {
 
   if (error && !blockDetail) {
     return (
-      <main className="page-content simple-background">
+      <main className="page-content">
         <section className="reenactment-page">
           <div className="reenactment-inner">
             <h2 className="reenactment-title">{t('reenactment.title') || 'Reenactment'}</h2>
@@ -173,69 +153,31 @@ export default function Reenactment({ isAdmin }) {
     const mainImageUrl = blockDetail.imageUrl;
 
     return (
-      <main className="page-content simple-background">
+      <main className="page-content">
         <section className="reenactment-page">
           <div className="reenactment-inner">
-            <h2 className="reenactment-detail-title">{blockDetail.title || ''}</h2>
+            <h2 className="reenactment-detail-title">{getLocalized(blockDetail?.titles, lang) || ''}</h2>
             <div className="reenactment-content">
               {mainImageUrl && (
                 <div className="reenactment-main-image">
-                  <img src={mainImageUrl} alt={blockDetail.title || 'Block'} />
+                  <img src={mainImageUrl} alt={getLocalized(blockDetail?.titles, lang) || 'Block'} />
                 </div>
               )}
-              {blockDetail.text && (
-                <p className="reenactment-block-item-text">{blockDetail.text}</p>
+              {(getLocalized(blockDetail?.texts, lang)) && (
+                <p className="reenactment-block-item-text">{getLocalized(blockDetail?.texts, lang)}</p>
               )}
               {hasPhotos ? (
-                <div className="reenactment-gallery" role="list">
-                  {blockDetail.photos.map((photo) => {
-                    const url = getPhotoUrl(photo);
-                    if (!url) return null;
-                    return (
-                      <div
-                        key={photo.id}
-                        className="reenactment-gallery-item"
-                        role="listitem"
-                        onClick={() => handlePhotoClick(photo)}
-                      >
-                        {isAdmin && (
-                          <div className="photo-admin-actions" onClick={(e) => e.stopPropagation()}>
-                            <button
-                              className="photo-action-btn photo-main-btn"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleSetMainPhoto(photo);
-                              }}
-                              title={t('gallery.album.setAsMain')}
-                            >
-                              ⭒
-                            </button>
-                            <button
-                              className="photo-action-btn photo-delete-btn"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeletePhoto(photo.id);
-                              }}
-                              title={t('gallery.album.deletePhoto')}
-                            >
-                              ×
-                            </button>
-                          </div>
-                        )}
-                        <img
-                          src={url}
-                          alt={photo.altText || photo.caption || 'Photo'}
-                          loading="lazy"
-                        />
-                        {photo.caption && (
-                          <div className="reenactment-gallery-item-overlay">
-                            <span>{photo.caption || photo.altText || ''}</span>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                <PhotoGrid
+                  photos={blockDetail.photos}
+                  lang={lang}
+                  isAdmin={isAdmin}
+                  onPhotoClick={handlePhotoClick}
+                  onSetMain={handleSetMainPhoto}
+                  onDelete={handleDeletePhoto}
+                  itemClassName="reenactment-gallery-item"
+                  overlayClassName="reenactment-gallery-item-overlay"
+                  gridClassName="reenactment-gallery"
+                />
               ) : (
                 !mainImageUrl && (
                   <div className="page-empty">{t('reenactment.noContent') || 'No photos yet.'}</div>
@@ -256,44 +198,16 @@ export default function Reenactment({ isAdmin }) {
             )}
           </div>
         </section>
-        {selectedPhotoIndex != null && (() => {
-          const photos = blockDetail.photos?.filter(p => getOriginalPhotoUrl(p)) || [];
-          const photo = photos[selectedPhotoIndex];
-          if (!photo) return null;
-          const url = getOriginalPhotoUrl(photo);
-          const caption = photo.caption || photo.altText || '';
-          const hasPrev = selectedPhotoIndex > 0;
-          const hasNext = selectedPhotoIndex < photos.length - 1;
-          return (
-            <div className="photo-modal-overlay" onClick={handleCloseModal}>
-              <div className="photo-modal-content" onClick={(e) => e.stopPropagation()}>
-                <button className="photo-modal-close" onClick={handleCloseModal}>×</button>
-                {hasPrev && (
-                  <button
-                    type="button"
-                    className="photo-modal-arrow photo-modal-prev"
-                    onClick={handlePrevPhoto}
-                    aria-label="Previous photo"
-                  >
-                    ‹
-                  </button>
-                )}
-                <img src={url} alt={photo.altText || photo.caption || 'Photo'} className="photo-modal-image" />
-                {hasNext && (
-                  <button
-                    type="button"
-                    className="photo-modal-arrow photo-modal-next"
-                    onClick={handleNextPhoto}
-                    aria-label="Next photo"
-                  >
-                    ›
-                  </button>
-                )}
-                {caption && <div className="photo-modal-caption">{caption}</div>}
-              </div>
-            </div>
-          );
-        })()}
+        {selectedPhotoIndex != null && (
+          <PhotoModal
+            photos={validPhotos}
+            selectedIndex={selectedPhotoIndex}
+            lang={lang}
+            onClose={handleCloseModal}
+            onPrev={handlePrevPhoto}
+            onNext={handleNextPhoto}
+          />
+        )}
       </main>
     );
   }
@@ -301,7 +215,7 @@ export default function Reenactment({ isAdmin }) {
   const hasBlocks = groupedData.some((g) => g.blocks?.length > 0);
 
   return (
-    <main className="page-content simple-background">
+    <main className="page-content">
       <section className="reenactment-page">
         <div className="reenactment-inner">
           <h2 className="reenactment-title">{t('reenactment.title') || 'Reenactment'}</h2>
@@ -317,25 +231,15 @@ export default function Reenactment({ isAdmin }) {
                   <h3 className="reenactment-category-title">{getCategoryName(category)}</h3>
                   <div className="galleries-grid" role="list">
                     {category.blocks.map((block) => (
-                      <div
+                      <GalleryCard
                         key={block.id}
-                        className="reenactment-block-card gallery-card"
-                        role="listitem"
+                        imageUrl={block.imageUrl}
+                        titles={block.titles}
+                        lang={lang}
                         onClick={() => handleBlockClick(block.id)}
-                      >
-                        {block.imageUrl ? (
-                          <div className="gallery-card-image">
-                            <img src={block.imageUrl} alt={block.title || 'Block'} loading="lazy" />
-                            <div className="gallery-card-overlay">
-                              <span className="gallery-card-title">{block.title || t('reenactment.untitled')}</span>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="gallery-card-placeholder">
-                            <span className="gallery-card-title">{block.title || t('reenactment.untitled')}</span>
-                          </div>
-                        )}
-                      </div>
+                        titleFallback={t('reenactment.untitled')}
+                        extraClassName="reenactment-block-card"
+                      />
                     ))}
                   </div>
                 </div>

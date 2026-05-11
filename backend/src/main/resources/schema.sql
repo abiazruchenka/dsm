@@ -13,10 +13,15 @@ CREATE INDEX IF NOT EXISTS idx_contacts_email ON contacts(email);
 CREATE TABLE IF NOT EXISTS events (
     id UUID PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
+    title_fr VARCHAR(255) NOT NULL,
+    title_en VARCHAR(255) NOT NULL,
     text TEXT NOT NULL,
+    text_fr TEXT NOT NULL,
+    text_en TEXT NOT NULL,
     image VARCHAR(255),
     link VARCHAR(255),
     date DATE,
+    is_published BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP
 );
@@ -24,8 +29,12 @@ CREATE TABLE IF NOT EXISTS events (
 CREATE TABLE IF NOT EXISTS galleries (
     id UUID PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
+    title_fr VARCHAR(255) NOT NULL,
+    title_en VARCHAR(255) NOT NULL,
     image VARCHAR(255),
     description TEXT,
+    description_fr TEXT,
+    description_en TEXT,
     is_published BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP
@@ -43,9 +52,10 @@ CREATE TABLE IF NOT EXISTS photos (
     height INTEGER,
     versions JSONB,
     gallery_id UUID,
-    block_id UUID,
 
     caption VARCHAR(255),
+    caption_fr VARCHAR(255),
+    caption_en VARCHAR(255),
     alt_text VARCHAR(255),
     sort_order INTEGER DEFAULT 0,
 
@@ -57,7 +67,7 @@ CREATE INDEX IF NOT EXISTS idx_photos_gallery_id ON photos(gallery_id);
 CREATE TABLE IF NOT EXISTS reenactment_categories (
     id UUID PRIMARY KEY,
     code VARCHAR(50) NOT NULL UNIQUE,
-    name_de VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL,
     name_en VARCHAR(255) NOT NULL,
     name_fr VARCHAR(255) NOT NULL,
     sort_order INTEGER NOT NULL DEFAULT 0,
@@ -66,8 +76,12 @@ CREATE TABLE IF NOT EXISTS reenactment_categories (
 
 CREATE TABLE IF NOT EXISTS blocks (
     id UUID PRIMARY KEY,
-    title VARCHAR(255),
-    text TEXT,
+    title VARCHAR(255) NOT NULL,
+    title_fr VARCHAR(255) NOT NULL,
+    title_en VARCHAR(255) NOT NULL,
+    text TEXT NOT NULL,
+    text_fr TEXT NOT NULL,
+    text_en TEXT NOT NULL,
     image VARCHAR(255),
     category_id UUID REFERENCES reenactment_categories(id) ON DELETE SET NULL,
     sort_order INTEGER NOT NULL DEFAULT 0,

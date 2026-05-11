@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import './Gallery.css';
 import GalleryManagement from './GalleryManagement';
+import GalleryCard from '../common/GalleryCard';
 import api from '../../config/axios';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../hooks/useLocale';
 
 export default function Gallery({ isAdmin }) {
   const { t } = useTranslation();
+  const lang = useLocale();
   const navigate = useNavigate();
   const [galleries, setGalleries] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,7 +58,7 @@ export default function Gallery({ isAdmin }) {
   }
 
   return (
-    <main className={`page-content simple-background`}>
+    <main className="page-content">
       <section className="gallery-container">
         <div className="gallery-inner">
           <h2 className="gallery-title">{t('gallery.title')}</h2>
@@ -67,33 +70,15 @@ export default function Gallery({ isAdmin }) {
           ) : (
             <div className="galleries-grid" role="list">
               {galleries.map((gallery) => (
-                <div 
-                  key={gallery.id} 
-                  className={`gallery-card ${!gallery.published ? 'gallery-card-unpublished' : ''}`}
-                  role="listitem"
+                <GalleryCard
+                  key={gallery.id}
+                  imageUrl={gallery.image}
+                  titles={gallery.titles}
+                  descriptions={gallery.descriptions}
+                  lang={lang}
                   onClick={() => navigate(`/gallery/${gallery.id}`)}
-                >
-
-                  {gallery.image ? (
-                    <div className="gallery-card-image">
-                      <img 
-                        src={gallery.image} 
-                        alt={gallery.title || 'Gallery'} 
-                        loading="lazy"
-                      />
-                      <div className="gallery-card-overlay">
-                        <span className="gallery-card-title">{gallery.title}</span>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="gallery-card-placeholder">
-                      <span className="gallery-card-title">{gallery.title}</span>
-                    </div>
-                  )}
-                  {gallery.description && (
-                    <p className="gallery-card-description">{gallery.description}</p>
-                  )}
-                </div>
+                  extraClassName={!gallery.published ? 'gallery-card-unpublished' : ''}
+                />
               ))}
             </div>
           )}

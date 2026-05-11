@@ -20,7 +20,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(name = "galleries")
 public class Gallery {
     @Id
@@ -29,8 +29,21 @@ public class Gallery {
     private UUID id;
 
     private String title;
+
+    @Column(name = "title_fr")
+    private String titleFr;
+
+    @Column(name = "title_en")
+    private String titleEn;
+
     private String image;
     private String description;
+
+    @Column(name = "description_fr", columnDefinition = "TEXT")
+    private String descriptionFr;
+
+    @Column(name = "description_en", columnDefinition = "TEXT")
+    private String descriptionEn;
 
     @Column(name = "is_published")
     private boolean published;

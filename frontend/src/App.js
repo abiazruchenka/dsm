@@ -1,5 +1,6 @@
 import './App.css';
 import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
 import Home from './components/Home/Home';
 import Startpage from './components/Startpage/Startpage';
 import Events from './components/Events/Events';
@@ -11,11 +12,18 @@ import Contact from './components/Contact/Contact';
 import ContactMessages from './components/Contact/ContactMessages';
 import Reenactment from './components/Reenactment/Reenactment';
 import EventDetail from './components/Events/EventDetail';
-import { Routes, Route, Navigate  } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
+
+function getContentBackground(pathname) {
+  if (pathname === '/' || pathname === '/login') return 'home-background';
+  if (pathname === '/contact' || pathname === '/admin') return 'page-background';
+  return 'simple-background';
+}
 
 export default function App() {
   const { isAdmin, isAuthenticated } = useAuth();
+  const location = useLocation();
 
   const ProtectedRoute = ({ children }) => {
     return isAuthenticated ? children : <Navigate to="/login" />;
@@ -25,10 +33,12 @@ export default function App() {
     return isAuthenticated ? adminContent : userContent;
   };
 
-  
+  const showFooter = location.pathname !== '/';
+
   return (
       <div className="App">
         <Header />
+        <div className={`content-area ${getContentBackground(location.pathname)}`}>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/"  element={<Home />} />
@@ -60,6 +70,8 @@ export default function App() {
             <Route path="/statute" element={<Statute />} />
             <Route path="/about" element={<About />} /> */}
           </Routes>
+          {showFooter && <Footer />}
+        </div>
       </div>   
   );
 };

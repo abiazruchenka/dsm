@@ -40,7 +40,7 @@ public class PhotoService {
     @Value("${admin.image.thumbsize}")
     private int thumbSize;
 
-    public PhotoResponse uploadFile(MultipartFile file, String caption, String altText, UUID galleryId) throws IOException {
+    public PhotoResponse uploadFile(MultipartFile file, String caption, String captionFr, String captionEn, String altText, UUID galleryId) throws IOException {
 
         byte[] fileBytes = file.getBytes();
 
@@ -84,6 +84,8 @@ public class PhotoService {
                     .height(height)
                     .versions(versions)
                     .caption(caption != null && !caption.isEmpty() ? caption : null)
+                    .captionFr(captionFr != null && !captionFr.isEmpty() ? captionFr : null)
+                    .captionEn(captionEn != null && !captionEn.isEmpty() ? captionEn : null)
                     .altText(altText != null && !altText.isEmpty() ? altText : null);
 
             if (galleryId != null) {
@@ -196,6 +198,14 @@ public class PhotoService {
         }
     }
 
+    private Map<String, String> buildCaptionsMap(Photo photo) {
+        Map<String, String> m = new HashMap<>();
+        if (photo.getCaption() != null) m.put("de", photo.getCaption());
+        if (photo.getCaptionFr() != null) m.put("fr", photo.getCaptionFr());
+        if (photo.getCaptionEn() != null) m.put("en", photo.getCaptionEn());
+        return m;
+    }
+
     private PhotoResponse mapToPhotoResponse(Photo photo) {
         Map<String, String> versionUrls = new HashMap<>();
         if (photo.getVersions() != null) {
@@ -219,7 +229,7 @@ public class PhotoService {
                 .versions(versionUrls.isEmpty() ? photo.getVersions() : versionUrls)
                 .versionKeys(photo.getVersions())
                 .galleryId(photo.getGalleryId())
-                .caption(photo.getCaption())
+                .captions(buildCaptionsMap(photo))
                 .altText(photo.getAltText())
                 .sortOrder(photo.getSortOrder())
                 .createdAt(photo.getCreatedAt())

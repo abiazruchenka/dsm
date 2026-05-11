@@ -47,7 +47,7 @@ export default function Contact() {
 };
 
     return(
-        <main className={`page-content page-background`}>
+        <main className="page-content contact-page">
           <div className="contact-container">
             <div className="contact-card">
               <div className="contact-body">

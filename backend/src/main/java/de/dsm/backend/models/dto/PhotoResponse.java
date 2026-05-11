@@ -25,7 +25,7 @@ public class PhotoResponse {
     private Map<String, String> versions;
     private Map<String, String> versionKeys; 
     private UUID galleryId;
-    private String caption;
+    private Map<String, String> captions;
     private String altText;
     private Integer sortOrder;
     private LocalDateTime createdAt;

@@ -103,7 +103,7 @@ class PhotoServiceTest {
         });
         lenient().when(s3UrlService.getPublicUrl(anyString())).thenReturn("https://example.com/image.jpg");
 
-        PhotoResponse result = photoService.uploadFile(multipartFile, "Test Caption", "Test Alt", galleryId);
+        PhotoResponse result = photoService.uploadFile(multipartFile, "Test Caption", null, null, "Test Alt", galleryId);
 
         assertNotNull(result);
         assertEquals(photoId, result.getId());
@@ -120,7 +120,7 @@ class PhotoServiceTest {
         when(multipartFile.getBytes()).thenReturn(invalidBytes);
 
         assertThrows(IllegalArgumentException.class, () -> {
-            photoService.uploadFile(multipartFile, null, null, null);
+            photoService.uploadFile(multipartFile, null, null, null, null, null);
         });
 
         verify(photoRepository, never()).save(any(Photo.class));

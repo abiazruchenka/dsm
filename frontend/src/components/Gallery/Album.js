@@ -1,12 +1,21 @@
 import api from '../../config/axios';
 import Divider from '../common/Divider';
 import ImageUploader from '../common/ImageUploader';
+import PhotoModal from '../common/PhotoModal';
+import PhotoGrid from '../common/PhotoGrid';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getLocalized } from '../../utils/i18n';
+import { useLocale } from '../../hooks/useLocale';
+import { usePhotoNavigation } from '../../hooks/usePhotoNavigation';
+import { getOriginalPhotoUrl } from '../../utils/photoUtils';
+import './Gallery.css';
+import '../common/PublishedToggle.css';
 
 export default function Album({ isAdmin }) {
     const { t } = useTranslation();
+    const lang = useLocale();
     const navigate = useNavigate();
     const { galleryId } = useParams();
     const [selectedGallery, setSelectedGallery] = useState(null);
@@ -28,22 +37,7 @@ export default function Album({ isAdmin }) {
         }
     }, [selectedGallery]);
 
-    useEffect(() => {
-        if (selectedPhotoIndex == null) return;
-        const validPhotos = photos.filter(p => getOriginalPhotoUrl(p));
-        const onKeyDown = (e) => {
-            if (e.key === 'Escape') setSelectedPhotoIndex(null);
-            else if (e.key === 'ArrowLeft' && selectedPhotoIndex > 0) {
-                setSelectedPhotoIndex(selectedPhotoIndex - 1);
-                e.preventDefault();
-            } else if (e.key === 'ArrowRight' && selectedPhotoIndex < validPhotos.length - 1) {
-                setSelectedPhotoIndex(selectedPhotoIndex + 1);
-                e.preventDefault();
-            }
-        };
-        window.addEventListener('keydown', onKeyDown);
-        return () => window.removeEventListener('keydown', onKeyDown);
-    }, [selectedPhotoIndex, photos]);
+    usePhotoNavigation(selectedPhotoIndex, photos, () => setSelectedPhotoIndex(null), setSelectedPhotoIndex, (p) => p.filter(getOriginalPhotoUrl));
 
     const fetchGallery = async (id) => {
         try {
@@ -83,16 +77,6 @@ export default function Album({ isAdmin }) {
         }
       };
 
-      const getPhotoUrl = (photo) => {
-        if (!photo || !photo.versions) return null;
-        return photo.versions.thumbnail || photo.versions.original || null;
-      };
-    
-      const getOriginalPhotoUrl = (photo) => {
-        if (!photo || !photo.versions) return null;
-        return photo.versions.original || photo.versions.thumbnail || null;
-      };
-    
       const handlePhotoClick = (photo) => {
         const validPhotos = photos.filter(p => getOriginalPhotoUrl(p));
         const index = validPhotos.findIndex(p => p.id === photo.id);
@@ -166,8 +150,8 @@ export default function Album({ isAdmin }) {
     
         try {
           await api.patch(`/api/galleries/${selectedGallery.id}`, {
-            title: selectedGallery.title,
-            description: selectedGallery.description,
+            titles: selectedGallery.titles || {},
+            descriptions: selectedGallery.descriptions || {},
             is_published: selectedGallery.published || false,
             image: imageKey
           });
@@ -189,8 +173,8 @@ export default function Album({ isAdmin }) {
     
         try {
           await api.patch(`/api/galleries/${selectedGallery.id}`, {
-            title: selectedGallery.title,
-            description: selectedGallery.description,
+            titles: selectedGallery.titles || {},
+            descriptions: selectedGallery.descriptions || {},
             is_published: published,
             image: null
           });
@@ -268,44 +252,21 @@ export default function Album({ isAdmin }) {
         );
       }
 
-      const PhotoModal = () => {
-        const validPhotos = photos.filter(p => getOriginalPhotoUrl(p));
-        const photo = validPhotos[selectedPhotoIndex];
-        if (!photo || selectedPhotoIndex == null) return null;
-        const url = getOriginalPhotoUrl(photo);
-        const caption = photo.caption || photo.altText || '';
-        const hasPrev = selectedPhotoIndex > 0;
-        const hasNext = selectedPhotoIndex < validPhotos.length - 1;
-        return (
-          <div className="photo-modal-overlay" onClick={handleCloseModal}>
-            <div className="photo-modal-content" onClick={(e) => e.stopPropagation()}>
-              <button className="photo-modal-close" onClick={handleCloseModal}>×</button>
-              {hasPrev && (
-                <button type="button" className="photo-modal-arrow photo-modal-prev" onClick={handlePrevPhoto} aria-label="Previous photo">‹</button>
-              )}
-              <img src={url} alt={photo.altText || photo.caption || 'Photo'} className="photo-modal-image" />
-              {hasNext && (
-                <button type="button" className="photo-modal-arrow photo-modal-next" onClick={handleNextPhoto} aria-label="Next photo">›</button>
-              )}
-              {caption && <div className="photo-modal-caption">{caption}</div>}
-            </div>
-          </div>
-        );
-      };  
+    const validPhotos = photos.filter(getOriginalPhotoUrl);
 
     if (!selectedGallery) {
         return null; 
     }
 
     return (
-        <main className={`page-content simple-background`}>
+        <main className="page-content">
             <section className="gallery-container">
                 <div className="gallery-inner">
-                    <h2 className="gallery-title">{selectedGallery?.title || 'Gallery'}</h2>
+                    <h2 className="gallery-title">{getLocalized(selectedGallery?.titles, lang) || 'Gallery'}</h2>
 
                
-                {selectedGallery.description && (
-                <p className="page-summary">{selectedGallery.description}</p>
+                {(getLocalized(selectedGallery?.descriptions, lang)) && (
+                <p className="page-summary">{getLocalized(selectedGallery?.descriptions, lang)}</p>
                 )}
 
                 {loadingPhotos ? (
@@ -313,59 +274,16 @@ export default function Album({ isAdmin }) {
                 ) : photos.length === 0 ? (
                 <div className="page-empty">{t('gallery.album.noPhotos')}</div>
                 ) : (
-                <div className="galleries-grid" role="list">
-                    {photos.map((photo) => {
-                    const imageUrl = getPhotoUrl(photo);
-                    if (!imageUrl) return null;
-
-                    return (
-                        <div 
-                            className="gallery-item" 
-                            role="listitem" 
-                            key={photo.id}
-                            onClick={() => handlePhotoClick(photo)}
-                        >
-                        {isAdmin && (
-                            <div className="photo-admin-actions" onClick={(e) => e.stopPropagation()}>
-                            <button
-                                className="photo-action-btn photo-main-btn"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleSetMainPhoto(photo, e);
-                                }}
-                                title={t('gallery.album.setAsMain')}
-                            >
-                                ⭒
-                            </button>
-                            <button
-                                className="photo-action-btn photo-delete-btn"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeletePhoto(photo.id, e);
-                                }}
-                                title={t('gallery.album.deletePhoto')}
-                            >
-                                ×
-                            </button>
-                            </div>
-                        )}
-                        <img 
-                            src={imageUrl} 
-                            alt={photo.altText || photo.caption || 'Photo'} 
-                            loading="lazy"
-                            style={{ cursor: 'pointer' }}
-                        />
-                     {photo.caption && (
-                        <div className="gallery-overlay">
-                            <span className="gallery-zoom">
-                            {photo.caption || 'Photo'}
-                            </span>
-                        </div>
-                     )}
-                    </div>
-                    );      
-                    })} 
-                </div>
+                <PhotoGrid
+                  photos={photos}
+                  lang={lang}
+                  isAdmin={isAdmin}
+                  onPhotoClick={handlePhotoClick}
+                  onSetMain={(photo) => handleSetMainPhoto(photo)}
+                  onDelete={(photoId) => handleDeletePhoto(photoId)}
+                  itemClassName="gallery-item"
+                  overlayClassName="gallery-overlay"
+                />
                 )}
 
 
@@ -385,7 +303,7 @@ export default function Album({ isAdmin }) {
             {isAdmin && selectedGallery && (
                 <div className="gallery-upload-section">
                     <div className="gallery-admin-actions">
-                        <label className="gallery-published-toggle">
+                        <label className="published-toggle">
                             <input
                             type="checkbox"
                             checked={selectedGallery.published || false}
@@ -410,7 +328,16 @@ export default function Album({ isAdmin }) {
                 </div>
                 )}
 
-            {selectedPhotoIndex != null && <PhotoModal />}
+            {selectedPhotoIndex != null && (
+              <PhotoModal
+                photos={validPhotos}
+                selectedIndex={selectedPhotoIndex}
+                lang={lang}
+                onClose={handleCloseModal}
+                onPrev={handlePrevPhoto}
+                onNext={handleNextPhoto}
+              />
+            )}
             </div>
             </section>
         </main>

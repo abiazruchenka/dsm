@@ -2,7 +2,7 @@ import './Startpage.css';
 
 export default function Startpage(){
     return(
-        <main className={`page-content simple-background`}>
+        <main className="page-content">
             <section className="hero-content">
                 <div className="hero-accent-bar" aria-hidden="true" />
                 <div className="hero-text-group">

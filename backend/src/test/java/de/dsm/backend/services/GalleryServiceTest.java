@@ -15,6 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,7 +48,7 @@ class GalleryServiceTest {
         ReflectionTestUtils.setField(gallery, "id", galleryId);
         ReflectionTestUtils.setField(gallery, "createdAt", LocalDateTime.now());
 
-        galleryRequest = new GalleryRequest("Test Gallery", "Test Description", false, null);
+        galleryRequest = new GalleryRequest(Map.of("de", "Test Gallery"), Map.of("de", "Test Description"), false, null);
     }
 
     @Test
@@ -66,8 +67,8 @@ class GalleryServiceTest {
 
         assertNotNull(result);
         assertEquals(galleryId, result.id());
-        assertEquals("Test Gallery", result.title());
-        assertEquals("Test Description", result.description());
+        assertEquals("Test Gallery", result.titles().get("de"));
+        assertEquals("Test Description", result.descriptions().get("de"));
         assertFalse(result.published());
         
         verify(galleryRepository, times(1)).save(galleryCaptor.capture());
@@ -79,7 +80,7 @@ class GalleryServiceTest {
 
     @Test
     void updateGallery() {
-        GalleryRequest updateRequest = new GalleryRequest("Updated Title", "Updated Description", true, "image-key");
+        GalleryRequest updateRequest = new GalleryRequest(Map.of("de", "Updated Title"), Map.of("de", "Updated Description"), true, "image-key");
         
         when(galleryRepository.getReferenceById(galleryId)).thenReturn(gallery);
         when(galleryRepository.save(gallery)).thenReturn(gallery);
@@ -141,6 +142,7 @@ class GalleryServiceTest {
         assertNotNull(result);
         assertEquals(1, result.size());
         assertTrue(result.get(0).published());
+        assertEquals("Published Gallery", result.get(0).titles().get("de"));
         verify(galleryRepository, times(1)).findByIs_publishedTrueOrderByCreatedAtDesc();
     }
 

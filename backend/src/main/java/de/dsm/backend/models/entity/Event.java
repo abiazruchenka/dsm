@@ -30,12 +30,28 @@ public class Event {
     private UUID id;
 
     private String title;
-    
+
+    @Column(name = "title_fr")
+    private String titleFr;
+
+    @Column(name = "title_en")
+    private String titleEn;
+
     @Column(columnDefinition = "TEXT")
     private String text;
+
+    @Column(name = "text_fr", columnDefinition = "TEXT")
+    private String textFr;
+
+    @Column(name = "text_en", columnDefinition = "TEXT")
+    private String textEn;
     private String image;
     private String link;
     private LocalDate date;
+
+    @Column(name = "is_published")
+    private boolean published = true;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -121,10 +122,18 @@ public class ReenactmentService {
         ReenactmentCategory cat = block.getCategoryId() != null
                 ? categoryRepository.findById(block.getCategoryId()).orElse(null)
                 : null;
+        Map<String, String> titles = new HashMap<>();
+        if (block.getTitle() != null) titles.put("de", block.getTitle());
+        if (block.getTitleFr() != null) titles.put("fr", block.getTitleFr());
+        if (block.getTitleEn() != null) titles.put("en", block.getTitleEn());
+        Map<String, String> texts = new HashMap<>();
+        if (block.getText() != null) texts.put("de", block.getText());
+        if (block.getTextFr() != null) texts.put("fr", block.getTextFr());
+        if (block.getTextEn() != null) texts.put("en", block.getTextEn());
         return new BlockDetailResponse(
                 block.getId(),
-                block.getTitle(),
-                block.getText(),
+                titles,
+                texts,
                 s3UrlService.getPublicUrl(block.getImage()),
                 block.getCategoryId(),
                 cat != null ? cat.getCode() : null,
@@ -135,8 +144,18 @@ public class ReenactmentService {
 
     public BlockResponse createBlock(BlockRequest request) {
         Block block = new Block();
-        block.setTitle(request.title());
-        block.setText(request.text());
+        if (request.titles() != null) {
+            String tDe = request.titles().get("de");
+            block.setTitle(tDe);
+            block.setTitleFr(request.titles().getOrDefault("fr", tDe != null ? tDe : ""));
+            block.setTitleEn(request.titles().getOrDefault("en", tDe != null ? tDe : ""));
+        }
+        if (request.texts() != null) {
+            String txtDe = request.texts().get("de");
+            block.setText(txtDe);
+            block.setTextFr(request.texts().getOrDefault("fr", txtDe != null ? txtDe : ""));
+            block.setTextEn(request.texts().getOrDefault("en", txtDe != null ? txtDe : ""));
+        }
         block.setCategoryId(request.categoryId());
         block.setSortOrder(request.sortOrder() != null ? request.sortOrder() : 0);
         block = blockRepository.save(block);
@@ -146,8 +165,18 @@ public class ReenactmentService {
     public BlockResponse updateBlock(UUID id, BlockRequest request) {
         Block block = blockRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Block not found"));
-        if (request.title() != null) block.setTitle(request.title());
-        if (request.text() != null) block.setText(request.text());
+        if (request.titles() != null) {
+            String tDe = request.titles().get("de");
+            block.setTitle(tDe);
+            block.setTitleFr(request.titles().getOrDefault("fr", tDe != null ? tDe : ""));
+            block.setTitleEn(request.titles().getOrDefault("en", tDe != null ? tDe : ""));
+        }
+        if (request.texts() != null) {
+            String txtDe = request.texts().get("de");
+            block.setText(txtDe);
+            block.setTextFr(request.texts().getOrDefault("fr", txtDe != null ? txtDe : ""));
+            block.setTextEn(request.texts().getOrDefault("en", txtDe != null ? txtDe : ""));
+        }
         if (request.categoryId() != null) block.setCategoryId(request.categoryId());
         if (request.sortOrder() != null) block.setSortOrder(request.sortOrder());
         if (request.image() != null) block.setImage(request.image());
@@ -167,9 +196,13 @@ public class ReenactmentService {
         ReenactmentCategory cat = b.getCategoryId() != null
                 ? categoryRepository.findById(b.getCategoryId()).orElse(null)
                 : null;
+        Map<String, String> titles = new HashMap<>();
+        if (b.getTitle() != null) titles.put("de", b.getTitle());
+        if (b.getTitleFr() != null) titles.put("fr", b.getTitleFr());
+        if (b.getTitleEn() != null) titles.put("en", b.getTitleEn());
         return new BlockListResponse(
                 b.getId(),
-                b.getTitle(),
+                titles,
                 s3UrlService.getPublicUrl(b.getImage()),
                 b.getCategoryId(),
                 cat != null ? cat.getCode() : null,
@@ -181,10 +214,18 @@ public class ReenactmentService {
         ReenactmentCategory cat = b.getCategoryId() != null
                 ? categoryRepository.findById(b.getCategoryId()).orElse(null)
                 : null;
+        Map<String, String> titles = new HashMap<>();
+        if (b.getTitle() != null) titles.put("de", b.getTitle());
+        if (b.getTitleFr() != null) titles.put("fr", b.getTitleFr());
+        if (b.getTitleEn() != null) titles.put("en", b.getTitleEn());
+        Map<String, String> texts = new HashMap<>();
+        if (b.getText() != null) texts.put("de", b.getText());
+        if (b.getTextFr() != null) texts.put("fr", b.getTextFr());
+        if (b.getTextEn() != null) texts.put("en", b.getTextEn());
         return new BlockResponse(
                 b.getId(),
-                b.getTitle(),
-                b.getText(),
+                titles,
+                texts,
                 s3UrlService.getPublicUrl(b.getImage()),
                 b.getCategoryId(),
                 cat != null ? cat.getCode() : null,

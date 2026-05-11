@@ -1,0 +1,40 @@
+.app-footer {
+  margin-top: auto;
+  padding: 20px 4%;
+  text-align: center;
+  position: relative;
+  background: rgba(5, 5, 5, 0.55);
+}
+
+.app-footer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(5, 5, 5, 0.6) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.app-footer p {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-off-white);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: var(--font-body);
+}
+
+.footer-copyright {
+  opacity: 0.95;
+}
+
+.footer-author {
+  margin-top: 4px;
+  opacity: 0.9;
+  font-size: 0.8rem;
+}
+
+.footer-project {
+  font-weight: 600;
+}

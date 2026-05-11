@@ -10,6 +10,9 @@
     "text": "Groupe de reconstitution militaire du sud de l'Allemagne e.V.",
     "subtext": "Reconstitution historique de la Vieille Armée 1870-1918"
   },
+  "footer": {
+    "developedBy": "Développé par"
+  },
   "events": {
     "title": "Événements",
     "description": "Événements de reconstitution à venir et démonstrations historiques",
@@ -35,6 +38,7 @@
       "descriptionRequired": "La description de l'événement est requise",
       "creating": "Création en cours...",
       "create": "Créer l'événement",
+      "published": "Publié",
       "success": "Événement créé avec succès !",
       "failed": "Échec de la création de l'événement",
       "remove": "Supprimer"
@@ -119,6 +123,12 @@
     "untitled": "Sans titre",
     "admin": {
       "createCategory": "Créer une catégorie",
+            "editCategory": "Modifier la catégorie",
+            "updateCategory": "Mettre à jour la catégorie",
+            "categoryUpdated": "Catégorie mise à jour !",
+            "categoryUpdateFailed": "Échec de la mise à jour de la catégorie",
+            "cancel": "Annuler",
+            "edit": "Modifier",
             "categoryCode": "Code",
             "categoryCodeRequired": "Le code de catégorie est requis",
             "categoryNamesRequired": "Tous les noms (DE, EN, FR) sont requis",

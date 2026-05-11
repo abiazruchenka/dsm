@@ -1,6 +1,6 @@
 export default function Admin(){
 return(
-    <main className={`page-content page-background`}>
+    <main className="page-content">
         <div className="container">
             <div style={{ textAlign: 'center', padding: '50px 0' }}>
             <h1>Admin</h1>

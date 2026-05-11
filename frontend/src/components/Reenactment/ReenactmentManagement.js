@@ -2,17 +2,23 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import ImageUploader from '../common/ImageUploader';
+import LocalizedFormFields from '../common/LocalizedFormFields';
 import { reenactmentService } from '../../services/reenactmentService';
+import { useLocale } from '../../hooks/useLocale';
 import './ReenactmentManagement.css';
 
 export default function ReenactmentManagement({ blockId, blockDetail, onRefresh }) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const lang = ['de', 'en', 'fr'].includes(i18n.language) ? i18n.language : 'en';
+  const lang = useLocale();
 
   const [categories, setCategories] = useState([]);
-  const [blockTitle, setBlockTitle] = useState('');
-  const [blockText, setBlockText] = useState('');
+  const [blockTitleDe, setBlockTitleDe] = useState('');
+  const [blockTitleEn, setBlockTitleEn] = useState('');
+  const [blockTitleFr, setBlockTitleFr] = useState('');
+  const [blockTextDe, setBlockTextDe] = useState('');
+  const [blockTextEn, setBlockTextEn] = useState('');
+  const [blockTextFr, setBlockTextFr] = useState('');
   const [blockCategoryId, setBlockCategoryId] = useState('');
   const [blockSortOrder, setBlockSortOrder] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -26,6 +32,8 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
   const [catSortOrder, setCatSortOrder] = useState(0);
   const [creatingCategory, setCreatingCategory] = useState(false);
   const [categorySuccess, setCategorySuccess] = useState(false);
+  const [editingCategoryId, setEditingCategoryId] = useState(null);
+  const [updatingCategory, setUpdatingCategory] = useState(false);
 
   const loadCategories = () => reenactmentService.getCategories().then(setCategories).catch(console.error);
 
@@ -35,8 +43,12 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
 
   useEffect(() => {
     if (blockDetail && blockId) {
-      setBlockTitle(blockDetail.title || '');
-      setBlockText(blockDetail.text || '');
+      setBlockTitleDe(blockDetail.titles?.de || '');
+      setBlockTitleEn(blockDetail.titles?.en || '');
+      setBlockTitleFr(blockDetail.titles?.fr || '');
+      setBlockTextDe(blockDetail.texts?.de || '');
+      setBlockTextEn(blockDetail.texts?.en || '');
+      setBlockTextFr(blockDetail.texts?.fr || '');
       setBlockCategoryId(blockDetail.categoryId || '');
       setBlockSortOrder(blockDetail.sortOrder ?? 0);
     }
@@ -49,8 +61,8 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
     setSuccess(false);
     try {
       await reenactmentService.updateBlock(blockId, {
-        title: blockTitle.trim() || null,
-        text: blockText.trim() || null,
+        titles: { de: blockTitleDe.trim(), en: blockTitleEn.trim(), fr: blockTitleFr.trim() },
+        texts: { de: blockTextDe.trim(), en: blockTextEn.trim(), fr: blockTextFr.trim() },
         categoryId: blockCategoryId || null,
         sortOrder: blockSortOrder,
       });
@@ -65,8 +77,8 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
   };
 
   const createBlock = async () => {
-    if (!blockTitle.trim()) {
-      setError(t('reenactment.admin.titleRequired') || 'Title is required');
+    if (!blockTitleDe.trim()) {
+      setError(t('reenactment.admin.titleRequired') || 'Title (DE) is required');
       return;
     }
     setLoading(true);
@@ -74,8 +86,8 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
     setSuccess(false);
     try {
       const block = await reenactmentService.createBlock({
-        title: blockTitle.trim(),
-        text: blockText.trim() || null,
+        titles: { de: blockTitleDe.trim(), en: blockTitleEn.trim(), fr: blockTitleFr.trim() },
+        texts: { de: blockTextDe.trim(), en: blockTextEn.trim(), fr: blockTextFr.trim() },
         categoryId: blockCategoryId || null,
         sortOrder: blockSortOrder,
       });
@@ -128,10 +140,58 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
     }
   };
 
+  const handleEditCategory = (cat) => {
+    setEditingCategoryId(cat.id);
+    setCatCode(cat.code || '');
+    setCatNameDe(cat.names?.de || '');
+    setCatNameEn(cat.names?.en || '');
+    setCatNameFr(cat.names?.fr || '');
+    setCatSortOrder(cat.sortOrder ?? 0);
+  };
+
+  const handleCancelEditCategory = () => {
+    setEditingCategoryId(null);
+    setCatCode('');
+    setCatNameDe('');
+    setCatNameEn('');
+    setCatNameFr('');
+    setCatSortOrder(0);
+  };
+
+  const updateCategory = async () => {
+    if (!editingCategoryId) return;
+    if (!catNameDe.trim() || !catNameEn.trim() || !catNameFr.trim()) {
+      setError(t('reenactment.admin.categoryNamesRequired') || 'All names (DE, EN, FR) are required');
+      return;
+    }
+    setUpdatingCategory(true);
+    setError(null);
+    setCategorySuccess(false);
+    try {
+      await reenactmentService.updateCategory(editingCategoryId, {
+        code: catCode.trim(),
+        nameDe: catNameDe.trim(),
+        nameEn: catNameEn.trim(),
+        nameFr: catNameFr.trim(),
+        sortOrder: catSortOrder,
+      });
+      handleCancelEditCategory();
+      setCategorySuccess(true);
+      loadCategories();
+      onRefresh?.();
+      setTimeout(() => setCategorySuccess(false), 3000);
+    } catch (err) {
+      setError(err?.message || t('reenactment.admin.categoryUpdateFailed') || 'Failed to update category');
+    } finally {
+      setUpdatingCategory(false);
+    }
+  };
+
   const handleDeleteCategory = async (catId) => {
     if (!window.confirm(t('reenactment.admin.deleteCategoryConfirm') || 'Delete this category? Blocks will become uncategorized.')) return;
     try {
       await reenactmentService.deleteCategory(catId);
+      if (editingCategoryId === catId) handleCancelEditCategory();
       loadCategories();
       onRefresh?.();
     } catch (err) {
@@ -154,10 +214,13 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
 
   // Create block form (when on list view)
   if (!blockId) {
+    const isEditingCategory = !!editingCategoryId;
     return (
       <div className="reenactment-management">
-        <h2>{t('reenactment.admin.createCategory') || 'Create Category'}</h2>
-        <div className="reenactment-form reenactment-category-form">
+        <div className="reenactment-category-section">
+          <div className="reenactment-category-form-wrap">
+            <h2>{isEditingCategory ? (t('reenactment.admin.editCategory') || 'Edit Category') : (t('reenactment.admin.createCategory') || 'Create Category')}</h2>
+            <div className="reenactment-form reenactment-category-form">
           <div className="form-group">
             <input
               id="cat-code"
@@ -165,7 +228,7 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
               value={catCode}
               onChange={(e) => setCatCode(e.target.value)}
               placeholder="e.g. my_category"
-              disabled={creatingCategory}
+              disabled={creatingCategory || isEditingCategory}
             />
           </div>
           <div className="form-group">
@@ -175,7 +238,7 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
               value={catNameDe}
               onChange={(e) => setCatNameDe(e.target.value)}
               placeholder="Deutscher Name"
-              disabled={creatingCategory}
+              disabled={creatingCategory || updatingCategory}
             />
           </div>
           <div className="form-group">
@@ -185,7 +248,7 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
               value={catNameEn}
               onChange={(e) => setCatNameEn(e.target.value)}
               placeholder="English name"
-              disabled={creatingCategory}
+              disabled={creatingCategory || updatingCategory}
             />
           </div>
           <div className="form-group">
@@ -195,7 +258,7 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
               value={catNameFr}
               onChange={(e) => setCatNameFr(e.target.value)}
               placeholder="Nom français"
-              disabled={creatingCategory}
+              disabled={creatingCategory || updatingCategory}
             />
           </div>
           <div className="form-group">
@@ -204,44 +267,76 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
               type="number"
               value={catSortOrder}
               onChange={(e) => setCatSortOrder(parseInt(e.target.value, 10) || 0)}
-              disabled={creatingCategory}
+              disabled={creatingCategory || updatingCategory}
             />
           </div>
           {error && <div className="upload-error">{error}</div>}
-          {categorySuccess && <div className="upload-success">{t('reenactment.admin.categoryCreated') || 'Category created!'}</div>}
+          {categorySuccess && <div className="upload-success">{isEditingCategory ? (t('reenactment.admin.categoryUpdated') || 'Category updated!') : (t('reenactment.admin.categoryCreated') || 'Category created!')}</div>}
           <div className="form-actions">
-            <button
-              onClick={createCategory}
-              disabled={!catCode.trim() || !catNameDe.trim() || !catNameEn.trim() || !catNameFr.trim() || creatingCategory}
-              className="upload-button"
-            >
-              {creatingCategory ? t('reenactment.admin.creating') || 'Creating...' : t('reenactment.admin.createCategory') || 'Create Category'}
-            </button>
+            {isEditingCategory ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleCancelEditCategory}
+                  className="upload-button upload-button-secondary"
+                  disabled={updatingCategory}
+                >
+                  {t('reenactment.admin.cancel') || 'Cancel'}
+                </button>
+                <button
+                  onClick={updateCategory}
+                  disabled={!catNameDe.trim() || !catNameEn.trim() || !catNameFr.trim() || updatingCategory}
+                  className="upload-button"
+                >
+                  {updatingCategory ? t('reenactment.admin.saving') || 'Saving...' : t('reenactment.admin.updateCategory') || 'Update Category'}
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={createCategory}
+                disabled={!catCode.trim() || !catNameDe.trim() || !catNameEn.trim() || !catNameFr.trim() || creatingCategory}
+                className="upload-button"
+              >
+                {creatingCategory ? t('reenactment.admin.creating') || 'Creating...' : t('reenactment.admin.createCategory') || 'Create Category'}
+              </button>
+            )}
           </div>
+        </div>
+        </div>
+          {categories.length > 0 && (
+            <div className="reenactment-categories-list-wrap">
+              <h3 className="reenactment-categories-list-title">{t('reenactment.admin.existingCategories') || 'Existing categories'}</h3>
+              <div className="reenactment-categories-list">
+                {categories.map((cat) => (
+                  <span key={cat.id} className="reenactment-category-chip">
+                    {getCategoryName(cat)}
+                    <button type="button" className="reenactment-category-edit" onClick={() => handleEditCategory(cat)} title={t('reenactment.admin.edit') || 'Edit'}>✎</button>
+                    <button type="button" className="reenactment-category-delete" onClick={() => handleDeleteCategory(cat.id)} title={t('reenactment.admin.delete')}>×</button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <h2 className="reenactment-form-section-title">{t('reenactment.admin.createBlock') || 'Create Block'}</h2>
         <div className="reenactment-form">
-          <div className="form-group">
-            <input
-              id="block-title"
-              type="text"
-              value={blockTitle}
-              onChange={(e) => setBlockTitle(e.target.value)}
-              placeholder={t('reenactment.admin.blockTitlePlaceholder') || 'Enter block title'}
-              disabled={loading}
-            />
-          </div>
-          <div className="form-group">
-            <textarea
-              id="block-text"
-              value={blockText}
-              onChange={(e) => setBlockText(e.target.value)}
-              placeholder={t('reenactment.admin.textPlaceholder') || 'Text content'}
-              rows={4}
-              disabled={loading}
-            />
-          </div>
+          <LocalizedFormFields
+            value={{ de: blockTitleDe, en: blockTitleEn, fr: blockTitleFr }}
+            onChange={(key, val) => { if (key === 'de') setBlockTitleDe(val); else if (key === 'en') setBlockTitleEn(val); else setBlockTitleFr(val); }}
+            type="text"
+            placeholderPrefix="Title"
+            disabled={loading}
+            requiredDe
+          />
+          <LocalizedFormFields
+            value={{ de: blockTextDe, en: blockTextEn, fr: blockTextFr }}
+            onChange={(key, val) => { if (key === 'de') setBlockTextDe(val); else if (key === 'en') setBlockTextEn(val); else setBlockTextFr(val); }}
+            type="textarea"
+            placeholderPrefix="Text"
+            textareaRows={3}
+            disabled={loading}
+          />
           <div className="form-group">
             <select
               id="block-category"
@@ -257,17 +352,6 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
               ))}
             </select>
           </div>
-          {categories.length > 0 && (
-            <div className="reenactment-categories-list">
-              <span>{t('reenactment.admin.existingCategories') || 'Existing categories'}: </span>
-              {categories.map((cat) => (
-                <span key={cat.id} className="reenactment-category-chip">
-                  {getCategoryName(cat)}
-                  <button type="button" className="reenactment-category-delete" onClick={() => handleDeleteCategory(cat.id)} title={t('reenactment.admin.delete')}>×</button>
-                </span>
-              ))}
-            </div>
-          )}
           <div className="form-group">
             <input
               id="block-sort"
@@ -282,7 +366,7 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
           <div className="form-actions">
             <button
               onClick={createBlock}
-              disabled={!blockTitle.trim() || loading}
+              disabled={!blockTitleDe.trim() || loading}
               className="upload-button"
             >
               {loading ? t('reenactment.admin.creating') || 'Creating...' : t('reenactment.admin.create') || 'Create Block'}
@@ -293,29 +377,25 @@ export default function ReenactmentManagement({ blockId, blockDetail, onRefresh 
     );
   }
 
-  // Block editing (when viewing a block) - like Album admin
   return (
     <div className="reenactment-management">
       <h2>{t('reenactment.admin.manageBlock') || 'Manage Block'}</h2>
       <div className="reenactment-form reenactment-edit-form">
-        <div className="form-group">
-          <input
-            type="text"
-            value={blockTitle}
-            onChange={(e) => setBlockTitle(e.target.value)}
-            placeholder={t('reenactment.admin.blockTitlePlaceholder') || 'Enter block title'}
-            disabled={loading}
-          />
-        </div>
-        <div className="form-group">
-          <textarea
-            value={blockText}
-            onChange={(e) => setBlockText(e.target.value)}
-            placeholder={t('reenactment.admin.textPlaceholder') || 'Text content'}
-            rows={4}
-            disabled={loading}
-          />
-        </div>
+        <LocalizedFormFields
+          value={{ de: blockTitleDe, en: blockTitleEn, fr: blockTitleFr }}
+          onChange={(key, val) => { if (key === 'de') setBlockTitleDe(val); else if (key === 'en') setBlockTitleEn(val); else setBlockTitleFr(val); }}
+          type="text"
+          placeholderPrefix="Title"
+          disabled={loading}
+        />
+        <LocalizedFormFields
+          value={{ de: blockTextDe, en: blockTextEn, fr: blockTextFr }}
+          onChange={(key, val) => { if (key === 'de') setBlockTextDe(val); else if (key === 'en') setBlockTextEn(val); else setBlockTextFr(val); }}
+          type="textarea"
+          placeholderPrefix="Text"
+          textareaRows={3}
+          disabled={loading}
+        />
         <div className="form-group">
           <select
             value={blockCategoryId}

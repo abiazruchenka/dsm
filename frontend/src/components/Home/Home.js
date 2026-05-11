@@ -5,7 +5,7 @@ export default function Home(){
     const { t } = useTranslation();
 
     return(
-        <main className={`page-content home-background`}>
+        <main className="page-content">
             <section className="hero-content">
                 <div className="hero-accent-bar" aria-hidden="true" />
                 <div className="hero-text-group">

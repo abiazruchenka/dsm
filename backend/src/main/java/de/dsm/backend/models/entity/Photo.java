@@ -64,6 +64,12 @@ public class Photo {
 
     private String caption;
 
+    @Column(name = "caption_fr")
+    private String captionFr;
+
+    @Column(name = "caption_en")
+    private String captionEn;
+
     @Column(name = "alt_text")
     private String altText;
 

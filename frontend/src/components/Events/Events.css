@@ -48,6 +48,9 @@
   cursor: pointer;
 }
 
+.event-item-unpublished {
+  border: 2px solid #fabc01 !important;
+}
 
 .event-image {
   flex: 0 0 200px;

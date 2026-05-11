@@ -49,7 +49,7 @@ export default function Login() {
   };
 
   return (
-    <main className="page-content home-background">
+    <main className="page-content login-page">
       <div className="login-container">
         <div className="login-card">
 

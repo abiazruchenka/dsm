@@ -10,6 +10,9 @@
         "text": "South German Military Reenactment Group e.V.",
         "subtext": "Historical reenactment of the Old Army 1870-1918"
     },
+    "footer": {
+        "developedBy": "Developed by"
+    },
     "events": {
         "title": "Events",
         "description": "Upcoming reenactment events and historical demonstrations",
@@ -35,6 +38,7 @@
             "descriptionRequired": "Event description is required",
             "creating": "Creating...",
             "create": "Create Event",
+            "published": "Published",
             "success": "Event created successfully!",
             "failed": "Failed to create event",
             "remove": "Remove"
@@ -119,6 +123,12 @@
         "untitled": "Untitled",
         "admin": {
             "createCategory": "Create Category",
+            "editCategory": "Edit Category",
+            "updateCategory": "Update Category",
+            "categoryUpdated": "Category updated!",
+            "categoryUpdateFailed": "Failed to update category",
+            "cancel": "Cancel",
+            "edit": "Edit",
             "categoryCode": "Code",
             "categoryCodeRequired": "Category code is required",
             "categoryNamesRequired": "All names (DE, EN, FR) are required",

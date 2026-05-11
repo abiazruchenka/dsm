@@ -9,6 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.UUID;
 
 public interface EventRepository extends JpaRepository<Event, UUID> {
+    @Query("SELECT e FROM Event e WHERE e.published = true ORDER BY e.date DESC NULLS LAST")
+    Page<Event> findPublishedOrderByDateDesc(Pageable pageable);
+
     @Query("SELECT e FROM Event e ORDER BY e.date DESC NULLS LAST")
     Page<Event> findAllOrderByDateDesc(Pageable pageable);
 }

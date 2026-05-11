@@ -38,12 +38,19 @@ public class EventController {
     @ResponseStatus(HttpStatus.CREATED)
     public EventResponse createEventWithFile(
             @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam("title") String title,
-            @RequestParam("text") String text,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "title_de", required = false) String titleDe,
+            @RequestParam(value = "title_en", required = false) String titleEn,
+            @RequestParam(value = "title_fr", required = false) String titleFr,
+            @RequestParam(value = "text", required = false) String text,
+            @RequestParam(value = "text_de", required = false) String textDe,
+            @RequestParam(value = "text_en", required = false) String textEn,
+            @RequestParam(value = "text_fr", required = false) String textFr,
             @RequestParam(value = "link", required = false) String link,
-            @RequestParam(value = "date", required = false) String date
+            @RequestParam(value = "date", required = false) String date,
+            @RequestParam(value = "is_published", required = false) Boolean isPublished
     ) {
-        return eventService.createEventWithFile(file, title, text, link, date);
+        return eventService.createEventWithFile(file, title, titleDe, titleEn, titleFr, text, textDe, textEn, textFr, link, date, isPublished);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -57,6 +64,11 @@ public class EventController {
         return eventService.getEvents(pageable);
     }
 
+    @GetMapping("/all")
+    public Page<EventResponse> getAllEvents(Pageable pageable) {
+        return eventService.getAllEvents(pageable);
+    }
+
     @GetMapping("/{id}")
     public EventResponse getEvent(@PathVariable UUID id) {
         return eventService.getEvent(id);
@@ -66,12 +78,19 @@ public class EventController {
     public EventResponse updateEventWithFile(
             @PathVariable UUID id,
             @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam("title") String title,
-            @RequestParam("text") String text,
+            @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "title_de", required = false) String titleDe,
+            @RequestParam(value = "title_en", required = false) String titleEn,
+            @RequestParam(value = "title_fr", required = false) String titleFr,
+            @RequestParam(value = "text", required = false) String text,
+            @RequestParam(value = "text_de", required = false) String textDe,
+            @RequestParam(value = "text_en", required = false) String textEn,
+            @RequestParam(value = "text_fr", required = false) String textFr,
             @RequestParam(value = "link", required = false) String link,
-            @RequestParam(value = "date", required = false) String date
+            @RequestParam(value = "date", required = false) String date,
+            @RequestParam(value = "is_published", required = false) Boolean isPublished
     ) {
-        return eventService.updateEventWithFile(id, file, title, text, link, date);
+        return eventService.updateEventWithFile(id, file, title, titleDe, titleEn, titleFr, text, textDe, textEn, textFr, link, date, isPublished);
     }
 
     @PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)

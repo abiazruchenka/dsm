@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import api from '../../config/axios';
 import ImageUploader from '../common/ImageUploader';
+import LocalizedFormFields from '../common/LocalizedFormFields';
+import '../common/PublishedToggle.css';
 import './GalleryManagement.css';
 
 const GalleryManagement = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const [galleryTitle, setGalleryTitle] = useState('');
-  const [galleryDescription, setGalleryDescription] = useState('');
+  const [titles, setTitles] = useState({ de: '', en: '', fr: '' });
+  const [descriptions, setDescriptions] = useState({ de: '', en: '', fr: '' });
   const [isPublished, setIsPublished] = useState(false);
   const [galleryId, setGalleryId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -17,7 +17,7 @@ const GalleryManagement = () => {
   const [success, setSuccess] = useState(false);
 
   const createGallery = async () => {
-    if (!galleryTitle.trim()) {
+    if (!titles.de?.trim()) {
       setError(t('gallery.create.titleRequired'));
       return;
     }
@@ -28,8 +28,8 @@ const GalleryManagement = () => {
 
     try {
       const response = await api.post('/api/galleries', {
-        title: galleryTitle,
-        description: galleryDescription,
+        titles: { de: titles.de.trim(), en: titles.en.trim(), fr: titles.fr.trim() },
+        descriptions: { de: descriptions.de.trim(), en: descriptions.en.trim(), fr: descriptions.fr.trim() },
         is_published: isPublished
       });
 
@@ -60,8 +60,8 @@ const GalleryManagement = () => {
     
     try {
       await api.patch(`/api/galleries/${galleryId}`, {
-        title: galleryTitle,
-        description: galleryDescription,
+        titles: { de: titles.de.trim(), en: titles.en.trim(), fr: titles.fr.trim() },
+        descriptions: { de: descriptions.de.trim(), en: descriptions.en.trim(), fr: descriptions.fr.trim() },
         is_published: published,
         image: null
       });
@@ -77,35 +77,26 @@ const GalleryManagement = () => {
       <h2>{t('gallery.create.title')}</h2>
 
       <div className="gallery-form">
-        <div className="form-group">
-          <label htmlFor="gallery-title-input" className="visually-hidden">{t('gallery.create.titleLabel')}</label>
-          <input
-            id="gallery-title-input"
-            type="text"
-            value={galleryTitle}
-            onChange={(e) => setGalleryTitle(e.target.value)}
-            placeholder={t('gallery.create.titlePlaceholder')}
-            disabled={loading || !!galleryId}
-            aria-label={t('gallery.create.titleLabel')}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="gallery-description-input" className="visually-hidden">{t('gallery.create.descriptionLabel')}</label>
-          <textarea
-            id="gallery-description-input"
-            value={galleryDescription}
-            onChange={(e) => setGalleryDescription(e.target.value)}
-            placeholder={t('gallery.create.descriptionPlaceholder')}
-            disabled={loading || !!galleryId}
-            rows={4}
-            aria-label={t('gallery.create.descriptionLabel')}
-          />
-        </div>
+        <LocalizedFormFields
+          value={titles}
+          onChange={(key, val) => setTitles(prev => ({ ...prev, [key]: val }))}
+          type="text"
+          placeholderPrefix="Title"
+          disabled={loading || !!galleryId}
+          requiredDe
+        />
+        <LocalizedFormFields
+          value={descriptions}
+          onChange={(key, val) => setDescriptions(prev => ({ ...prev, [key]: val }))}
+          type="textarea"
+          placeholderPrefix="Description"
+          textareaRows={3}
+          disabled={loading || !!galleryId}
+        />
 
         {galleryId && (
           <div className="form-group">
-            <label>
+            <label className="published-toggle">
               <input
                 type="checkbox"
                 checked={isPublished}
@@ -129,7 +120,7 @@ const GalleryManagement = () => {
           <div className="form-actions">
             <button
               onClick={createGallery}
-              disabled={!galleryTitle.trim() || loading}
+              disabled={!titles.de?.trim() || loading}
               className="upload-button"
             >
               {loading ? t('gallery.create.creating') : t('gallery.create.create')}

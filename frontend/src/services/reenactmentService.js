@@ -30,8 +30,9 @@ export const reenactmentService = {
     return response.data;
   },
 
-  updateCategory: async (id, { nameDe, nameEn, nameFr, sortOrder }) => {
+  updateCategory: async (id, { code, nameDe, nameEn, nameFr, sortOrder }) => {
     const response = await api.patch(`/api/reenactment/categories/${id}`, {
+      code: code ?? '',
       nameDe,
       nameEn,
       nameFr,
@@ -53,20 +54,20 @@ export const reenactmentService = {
     }
   },
 
-  createBlock: async ({ title, text, categoryId, sortOrder = 0 }) => {
+  createBlock: async ({ titles, texts, categoryId, sortOrder = 0 }) => {
     const response = await api.post('/api/reenactment/blocks', {
-      title,
-      text: text || null,
+      titles: titles || {},
+      texts: texts || {},
       categoryId: categoryId || null,
       sortOrder,
     });
     return response.data;
   },
 
-  updateBlock: async (blockId, { title, text, categoryId, sortOrder, image }) => {
+  updateBlock: async (blockId, { titles, texts, categoryId, sortOrder, image }) => {
     const response = await api.patch(`/api/reenactment/blocks/${blockId}`, {
-      title,
-      text,
+      titles,
+      texts,
       categoryId,
       sortOrder,
       image,

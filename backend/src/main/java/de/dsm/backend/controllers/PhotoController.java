@@ -35,10 +35,12 @@ public class PhotoController {
     public PhotoResponse uploadPhoto(
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "caption", required = false) String caption,
+            @RequestParam(value = "captionFr", required = false) String captionFr,
+            @RequestParam(value = "captionEn", required = false) String captionEn,
             @RequestParam(value = "altText", required = false) String altText,
             @RequestParam(value = "galleryId", required = false) UUID galleryId
     ) throws IOException {
-        return photoService.uploadFile(file, caption, altText, galleryId);
+        return photoService.uploadFile(file, caption, captionFr, captionEn, altText, galleryId);
     }
 
     @DeleteMapping("/{id}")

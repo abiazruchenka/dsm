@@ -1,6 +1,12 @@
 package de.dsm.backend.models.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.util.Map;
 
-public record GalleryRequest(@NotBlank String title, String description, boolean is_published, String image) {
+public record GalleryRequest(
+        @NotNull Map<String, String> titles,
+        Map<String, String> descriptions,
+        boolean is_published,
+        String image
+) {
 }

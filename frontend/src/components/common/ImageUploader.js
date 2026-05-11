@@ -42,6 +42,8 @@ const ImageUploader = ({
         url: URL.createObjectURL(file),
         name: file.name,
         caption: '',
+        captionEn: '',
+        captionFr: '',
         altText: ''
       });
     }
@@ -74,6 +76,8 @@ const ImageUploader = ({
         const formData = new FormData();
         formData.append('file', file);
         if (preview.caption) formData.append('caption', preview.caption);
+        if (preview.captionEn) formData.append('captionEn', preview.captionEn);
+        if (preview.captionFr) formData.append('captionFr', preview.captionFr);
         if (preview.altText) formData.append('altText', preview.altText);
         if (galleryId) formData.append('galleryId', galleryId);
         
@@ -182,14 +186,11 @@ const ImageUploader = ({
                 {(showCaption || showAltText) && (
                   <div className="upload-preview-meta">
                     {showCaption && (
-                      <input
-                        type="text"
-                        value={preview.caption || ''}
-                        onChange={(e) => updatePreviewMeta(index, 'caption', e.target.value)}
-                        placeholder={t('gallery.upload.captionPlaceholder')}
-                        disabled={loading}
-                        className="upload-preview-caption"
-                      />
+                      <>
+                        <input type="text" value={preview.caption || ''} onChange={(e) => updatePreviewMeta(index, 'caption', e.target.value)} placeholder="Caption (DE)" disabled={loading} />
+                        <input type="text" value={preview.captionEn || ''} onChange={(e) => updatePreviewMeta(index, 'captionEn', e.target.value)} placeholder="Caption (EN)" disabled={loading} />
+                        <input type="text" value={preview.captionFr || ''} onChange={(e) => updatePreviewMeta(index, 'captionFr', e.target.value)} placeholder="Caption (FR)" disabled={loading} />
+                      </>
                     )}
                     {showAltText && (
                       <input

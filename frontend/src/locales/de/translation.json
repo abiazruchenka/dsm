@@ -10,6 +10,9 @@
         "text": "Darstellungsgruppe Süddeutsches Militär e.V.",
         "subtext": "Geschichtsdarstellung der Alten Armee 1870-1918"
     },
+    "footer": {
+        "developedBy": "Entwickelt von"
+    },
     "events": {
         "title": "Veranstaltungen",
         "description": "Kommende Veranstaltungen und historische Demonstrationen",
@@ -35,6 +38,7 @@
             "descriptionRequired": "Veranstaltungsbeschreibung ist erforderlich",
             "creating": "Wird erstellt...",
             "create": "Veranstaltung erstellen",
+            "published": "Veröffentlicht",
             "success": "Veranstaltung erfolgreich erstellt!",
             "failed": "Veranstaltung konnte nicht erstellt werden",
             "remove": "Entfernen"
@@ -119,6 +123,12 @@
         "untitled": "Ohne Titel",
         "admin": {
             "createCategory": "Kategorie erstellen",
+            "editCategory": "Kategorie bearbeiten",
+            "updateCategory": "Kategorie aktualisieren",
+            "categoryUpdated": "Kategorie aktualisiert!",
+            "categoryUpdateFailed": "Kategorie konnte nicht aktualisiert werden",
+            "cancel": "Abbrechen",
+            "edit": "Bearbeiten",
             "categoryCode": "Code",
             "categoryCodeRequired": "Kategoriecode ist erforderlich",
             "categoryNamesRequired": "Alle Namen (DE, EN, FR) sind erforderlich",

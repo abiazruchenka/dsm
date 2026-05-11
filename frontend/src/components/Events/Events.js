@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import api from '../../config/axios';
 import EventsManagement from './EventsManagement';
+import { getLocalized } from '../../utils/i18n';
 
 export default function Events({ isAdmin }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = ['de', 'en', 'fr'].includes(i18n.language) ? i18n.language : 'en';
   const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +25,8 @@ export default function Events({ isAdmin }) {
     try {
       setLoading(true);
       setError(null);
-      const response = await api.get('/api/events', {
+      const endpoint = isAdmin ? '/api/events/all' : '/api/events';
+      const response = await api.get(endpoint, {
         params: {
           page: page,
           size: 10,
@@ -62,7 +65,7 @@ export default function Events({ isAdmin }) {
   };
 
   return (
-    <main className={`page-content simple-background`}>
+    <main className="page-content">
       <section className="events-page">
         <div className="events-inner">
           <h2 className="events-title">{t('events.title')}</h2>
@@ -82,22 +85,22 @@ export default function Events({ isAdmin }) {
               <ul className="events-list">
                 {events.map((ev) => (
                   <li 
-                    className="event-item event-item-clickable"
+                    className={`event-item event-item-clickable${!ev.published ? ' event-item-unpublished' : ''}`}
                     key={ev.id}
                     onClick={() => handleEventClick(ev.id)}
                   >
                     {ev.image && (
                       <div className="event-image">
-                        <img src={ev.image} alt={ev.title || 'Event'} loading="lazy" />
+                        <img src={ev.image} alt={getLocalized(ev?.titles, lang) || 'Event'} loading="lazy" />
                       </div>
                     )}
                     <div className="event-content">
-                      <h3 className="event-title">{ev.title}</h3>
+                      <h3 className="event-title">{getLocalized(ev?.titles, lang)}</h3>
                       {ev.date && (
                         <time className="event-date">{formatDate(ev.date)}</time>
                       )}
-                    {ev.text && (
-                      <p className="event-desc">{truncateText(ev.text, 150)}</p>
+                    {(getLocalized(ev?.texts, lang)) && (
+                      <p className="event-desc">{truncateText(getLocalized(ev?.texts, lang), 150)}</p>
                     )}
                     </div>
                   </li>

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,7 +60,7 @@ class EventServiceTest {
         ReflectionTestUtils.setField(event, "text", "Test Description");
         ReflectionTestUtils.setField(event, "createdAt", LocalDateTime.now());
 
-        eventRequest = new EventRequest(eventId, "Test Event", "Test Description", null, null, null);
+        eventRequest = new EventRequest(eventId, Map.of("de", "Test Event"), Map.of("de", "Test Description"), null, null, null, null);
     }
 
     @Test
@@ -77,14 +78,14 @@ class EventServiceTest {
 
         assertNotNull(result);
         assertEquals(eventId, result.id());
-        assertEquals("Test Event", result.title());
-        assertEquals("Test Description", result.text());
+        assertEquals("Test Event", result.titles().get("de"));
+        assertEquals("Test Description", result.texts().get("de"));
         verify(eventRepository, times(1)).save(any(Event.class));
     }
 
     @Test
     void createEventWithBlankTitle() {
-        EventRequest invalidRequest = new EventRequest(null, "", "Test Description", null, null, null);
+        EventRequest invalidRequest = new EventRequest(null, Map.of("de", ""), Map.of("de", "Test Description"), null, null, null, null);
 
         assertThrows(IllegalArgumentException.class, () -> {
             eventService.createEvent(invalidRequest);
@@ -95,7 +96,7 @@ class EventServiceTest {
 
     @Test
     void createEventWithBlankText() {
-        EventRequest invalidRequest = new EventRequest(null, "Test Event", "", null, null, null);
+        EventRequest invalidRequest = new EventRequest(null, Map.of(), Map.of("de", ""), null, null, null, null);
 
         assertThrows(IllegalArgumentException.class, () -> {
             eventService.createEvent(invalidRequest);
@@ -111,7 +112,7 @@ class EventServiceTest {
             .id(UUID.randomUUID())
             .objectKey("image-key")
             .build();
-        when(photoService.uploadFile(any(), any(), any(), any())).thenReturn(photoResponse);
+        when(photoService.uploadFile(any(), any(), any(), any(), any(), any())).thenReturn(photoResponse);
 
         Event savedEvent = new Event();
         ReflectionTestUtils.setField(savedEvent, "id", eventId);
@@ -124,12 +125,13 @@ class EventServiceTest {
         when(s3UrlService.getPublicUrl("image-key")).thenReturn("https://example.com/image.jpg");
 
         EventResponse result = eventService.createEventWithFile(
-            multipartFile, "Test Event", "Test Description", null, null
+            multipartFile, "Test Event", "Test Event", null, null,
+            "Test Description", "Test Description", null, null, null, null, null
         );
 
         assertNotNull(result);
-        assertEquals("Test Event", result.title());
-        verify(photoService, times(1)).uploadFile(any(), any(), any(), any());
+        assertEquals("Test Event", result.titles().get("de"));
+        verify(photoService, times(1)).uploadFile(any(), any(), any(), any(), any(), any());
         verify(eventRepository, times(1)).save(any(Event.class));
     }
 
@@ -142,7 +144,7 @@ class EventServiceTest {
 
         assertNotNull(result);
         assertEquals(eventId, result.id());
-        assertEquals("Test Event", result.title());
+        assertEquals("Test Event", result.titles().get("de"));
         verify(eventRepository, times(1)).getReferenceById(eventId);
     }
 
@@ -151,7 +153,7 @@ class EventServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Event> eventPage = new PageImpl<>(List.of(event), pageable, 1);
 
-        when(eventRepository.findAllOrderByDateDesc(pageable)).thenReturn(eventPage);
+        when(eventRepository.findPublishedOrderByDateDesc(pageable)).thenReturn(eventPage);
         when(s3UrlService.getPublicUrl(null)).thenReturn(null);
 
         Page<EventResponse> result = eventService.getEvents(pageable);
@@ -159,13 +161,13 @@ class EventServiceTest {
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
         assertEquals(1, result.getContent().size());
-        verify(eventRepository, times(1)).findAllOrderByDateDesc(pageable);
+        verify(eventRepository, times(1)).findPublishedOrderByDateDesc(pageable);
     }
 
     @Test
     void updateEvent() {
         EventRequest updateRequest = new EventRequest(
-            eventId, "Updated Title", "Updated Text", "image-key", "https://example.com", LocalDate.now()
+            eventId, Map.of("de", "Updated Title"), Map.of("de", "Updated Text"), "image-key", "https://example.com", LocalDate.now(), null
         );
 
         when(eventRepository.getReferenceById(eventId)).thenReturn(event);
@@ -189,20 +191,21 @@ class EventServiceTest {
             .id(UUID.randomUUID())
             .objectKey("new-image-key")
             .build();
-        when(photoService.uploadFile(any(), any(), any(), any())).thenReturn(photoResponse);
+        when(photoService.uploadFile(any(), any(), any(), any(), any(), any())).thenReturn(photoResponse);
 
         when(eventRepository.getReferenceById(eventId)).thenReturn(event);
         when(eventRepository.save(event)).thenReturn(event);
         when(s3UrlService.getPublicUrl("new-image-key")).thenReturn("https://example.com/new-image.jpg");
 
         EventResponse result = eventService.updateEventWithFile(
-            eventId, multipartFile, "Updated Title", "Updated Text", null, null
+            eventId, multipartFile, "Updated Title", "Updated Title", null, null,
+            "Updated Text", "Updated Text", null, null, null, null, null
         );
 
         assertNotNull(result);
         assertEquals("Updated Title", event.getTitle());
         assertEquals("new-image-key", event.getImage());
-        verify(photoService, times(1)).uploadFile(any(), any(), any(), any());
+        verify(photoService, times(1)).uploadFile(any(), any(), any(), any(), any(), any());
         verify(eventRepository, times(1)).save(event);
     }
 
@@ -222,7 +225,7 @@ class EventServiceTest {
             .id(UUID.randomUUID())
             .objectKey("image-key")
             .build();
-        when(photoService.uploadFile(any(), any(), any(), any())).thenReturn(photoResponse);
+        when(photoService.uploadFile(any(), any(), any(), any(), any(), any())).thenReturn(photoResponse);
 
         Event savedEvent = new Event();
         ReflectionTestUtils.setField(savedEvent, "id", eventId);
@@ -236,7 +239,8 @@ class EventServiceTest {
         when(s3UrlService.getPublicUrl("image-key")).thenReturn("https://example.com/image.jpg");
 
         EventResponse result = eventService.createEventWithFile(
-            multipartFile, "Test Event", "Test Description", null, "2024-01-15"
+            multipartFile, "Test Event", "Test Event", null, null,
+            "Test Description", "Test Description", null, null, null, "2024-01-15", null
         );
 
         assertNotNull(result);

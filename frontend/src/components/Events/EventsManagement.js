@@ -2,29 +2,35 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import api from '../../config/axios';
+import '../common/PublishedToggle.css';
 import './EventsManagement.css';
 
 export default function EventsManagement({ onEventCreated }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [eventTitle, setEventTitle] = useState('');
-  const [eventText, setEventText] = useState('');
+  const [eventTitleDe, setEventTitleDe] = useState('');
+  const [eventTitleEn, setEventTitleEn] = useState('');
+  const [eventTitleFr, setEventTitleFr] = useState('');
+  const [eventTextDe, setEventTextDe] = useState('');
+  const [eventTextEn, setEventTextEn] = useState('');
+  const [eventTextFr, setEventTextFr] = useState('');
   const [eventFile, setEventFile] = useState(null);
   const [eventFilePreview, setEventFilePreview] = useState(null);
   const [eventLink, setEventLink] = useState('');
   const [eventDate, setEventDate] = useState('');
+  const [isPublished, setIsPublished] = useState(true);
   const [eventId, setEventId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
   const createEvent = async () => {
-    if (!eventTitle.trim()) {
+    if (!eventTitleDe.trim()) {
       setError(t('events.create.titleRequired'));
       return;
     }
 
-    if (!eventText.trim()) {
+    if (!eventTextDe.trim()) {
       setError(t('events.create.descriptionRequired'));
       return;
     }
@@ -35,8 +41,12 @@ export default function EventsManagement({ onEventCreated }) {
 
     try {
       const formData = new FormData();
-      formData.append('title', eventTitle);
-      formData.append('text', eventText);
+      formData.append('title_de', eventTitleDe);
+      formData.append('title_en', eventTitleEn);
+      formData.append('title_fr', eventTitleFr);
+      formData.append('text_de', eventTextDe);
+      formData.append('text_en', eventTextEn);
+      formData.append('text_fr', eventTextFr);
       if (eventFile) {
         formData.append('file', eventFile);
       }
@@ -46,6 +56,7 @@ export default function EventsManagement({ onEventCreated }) {
       if (eventDate) {
         formData.append('date', eventDate);
       }
+      formData.append('is_published', isPublished);
 
       const response = await api.post('/api/events', formData);
 
@@ -53,9 +64,12 @@ export default function EventsManagement({ onEventCreated }) {
       setSuccess(true);
       setError(null);
 
-      // Clear form
-      setEventTitle('');
-      setEventText('');
+      setEventTitleDe('');
+      setEventTitleEn('');
+      setEventTitleFr('');
+      setEventTextDe('');
+      setEventTextEn('');
+      setEventTextFr('');
       setEventFile(null);
       if (eventFilePreview) {
         URL.revokeObjectURL(eventFilePreview);
@@ -90,31 +104,22 @@ export default function EventsManagement({ onEventCreated }) {
 
       <div className="events-form">
         <div className="form-group">
-          <label htmlFor="event-title-input" className="visually-hidden">{t('events.create.eventTitle')}</label>
-          <input
-            id="event-title-input"
-            type="text"
-            value={eventTitle}
-            onChange={(e) => setEventTitle(e.target.value)}
-            placeholder={t('events.create.eventTitlePlaceholder')}
-            disabled={loading || !!eventId}
-            aria-label={t('events.create.eventTitle')}
-            required
-          />
+          <input type="text" value={eventTitleDe} onChange={(e) => setEventTitleDe(e.target.value)} placeholder="Title (DE)" disabled={loading || !!eventId} required />
         </div>
-
         <div className="form-group">
-          <label htmlFor="event-text-input" className="visually-hidden">{t('events.create.eventDescription')}</label>
-          <textarea
-            id="event-text-input"
-            value={eventText}
-            onChange={(e) => setEventText(e.target.value)}
-            placeholder={t('events.create.eventDescriptionPlaceholder')}
-            disabled={loading || !!eventId}
-            rows={6}
-            aria-label={t('events.create.eventDescription')}
-            required
-          />
+          <input type="text" value={eventTitleEn} onChange={(e) => setEventTitleEn(e.target.value)} placeholder="Title (EN)" disabled={loading || !!eventId} />
+        </div>
+        <div className="form-group">
+          <input type="text" value={eventTitleFr} onChange={(e) => setEventTitleFr(e.target.value)} placeholder="Title (FR)" disabled={loading || !!eventId} />
+        </div>
+        <div className="form-group">
+          <textarea value={eventTextDe} onChange={(e) => setEventTextDe(e.target.value)} placeholder="Description (DE)" disabled={loading || !!eventId} rows={4} required />
+        </div>
+        <div className="form-group">
+          <textarea value={eventTextEn} onChange={(e) => setEventTextEn(e.target.value)} placeholder="Description (EN)" disabled={loading || !!eventId} rows={4} />
+        </div>
+        <div className="form-group">
+          <textarea value={eventTextFr} onChange={(e) => setEventTextFr(e.target.value)} placeholder="Description (FR)" disabled={loading || !!eventId} rows={4} />
         </div>
 
         <div className="form-group">
@@ -191,6 +196,18 @@ export default function EventsManagement({ onEventCreated }) {
           />
         </div>
 
+        <div className="form-group">
+          <label className="published-toggle">
+            <input
+              type="checkbox"
+              checked={isPublished}
+              onChange={(e) => setIsPublished(e.target.checked)}
+              disabled={loading || !!eventId}
+            />
+            {t('events.create.published')}
+          </label>
+        </div>
+
         {error && (
           <div className="upload-error">{error}</div>
         )}
@@ -203,7 +220,7 @@ export default function EventsManagement({ onEventCreated }) {
           <div className="form-actions">
             <button
               onClick={createEvent}
-              disabled={!eventTitle.trim() || !eventText.trim() || loading}
+              disabled={!eventTitleDe.trim() || !eventTextDe.trim() || loading}
               className="upload-button"
             >
               {loading ? t('events.create.creating') : t('events.create.create')}
